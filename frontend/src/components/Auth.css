@@ -1,0 +1,49 @@
+.auth-container {
+    width: 350px;
+    padding: 20px;
+    text-align: center;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: absolute;  /* ✅ Centering */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.auth-inputs input {
+    display: block;
+    width: 80%;
+    padding: 10px;
+    margin: 10px auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.auth-button {
+    width: 85%;
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.auth-button.signup {
+    background: #28a745; /* ✅ Green color for Sign Up button */
+}
+
+.auth-button:hover {
+    background: #0056b3;
+}
+
+.auth-button.signup:hover {
+    background: #218838;
+}
+
+.auth-status {
+    color: green;
+    margin-top: 10px;
+}
