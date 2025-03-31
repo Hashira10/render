@@ -152,7 +152,7 @@ const RecipientList = () => {
                 secondary={`${recipient.email} - ${recipient.position}`}
               />
               <ListItemSecondaryAction>
-                <IconButton edge="end" component={Link} to={`/edit-recipient/${recipient.id}`} color="primary">
+                <IconButton edge="end" component={Link} to={`/dashboard/edit-recipient/${recipient.id}`} color="primary">
                   <EditIcon />
                 </IconButton>
                 <IconButton edge="end" onClick={() => handleDeleteRecipient(recipient.id)} color="error">

@@ -21,9 +21,30 @@ const MainLayout = ({ setIsAuthenticated }) => {
         }
     };
 
+    const getPageTitle = () => {
+        switch (location.pathname) {
+        case "/dashboard":
+            return "Add Sender";
+        case "/dashboard/senders":
+            return "Sender List";
+        case "/dashboard/edit-sender/:senderId":
+            return "Edit Sender";
+        case "/dashboard/add-recipient-group":
+            return "Add Recipient Group";
+        case "/dashboard/recipient-groups":
+            return "Recipient Group List";
+        case "/dashboard/send-message":
+            return "Campaigns";
+        case "/dashboard/report":
+            return "Report";
+        default:
+            return "Email System";
+        }
+    };
+
     return (
         <div>
-            <h1>Email System</h1>
+            <h1>{getPageTitle()}</h1>
 
             <nav>
                 <ul>
@@ -33,7 +54,7 @@ const MainLayout = ({ setIsAuthenticated }) => {
                     <li><Link to="/dashboard/recipient-groups">Recipient Group List</Link></li>
                     <li><Link to="/dashboard/send-message">Campaigns</Link></li>
                     <li><Link to="/dashboard/report">Report</Link></li>
-                    <button onClick={handleLogout}>Logout</button>
+                    <li><Link to="/auth" onClick={handleLogout}>Logout</Link></li>
                 </ul>
             </nav>
 

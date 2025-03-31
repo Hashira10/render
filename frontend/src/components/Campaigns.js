@@ -244,7 +244,14 @@ const Campaigns = () => {
                   variant="contained"
                   onClick={handleGenerateMessage}
                   disabled={loading}
-                  sx={{ background: "#007bff", color: "white" }}
+                  sx={{ 
+                    width: "180px",
+                    height: "36px", 
+                    fontSize: "0.875rem",
+                    background: sending ? "gray" : "linear-gradient(135deg, #011843,rgb(127, 161, 220))", 
+                    color: "#fff", 
+                    "&:hover": { background: sending ? "gray" : "linear-gradient(135deg, #01102c,rgb(137, 174, 216))" }
+                  }}
                 >
                   {loading ? <CircularProgress size={20} sx={{ color: "white", marginRight: 1 }} /> : "Generate Email"}
                 </Button>
@@ -253,7 +260,16 @@ const Campaigns = () => {
               <Grid item xs={12}>
 
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <Button variant="contained" onClick={handlePrev} disabled={currentIndex === 0}>
+                      <Button 
+                        variant="contained" 
+                        onClick={handlePrev} 
+                        disabled={currentIndex === 0}
+                        sx={{ 
+                          backgroundColor: "#1E56A0", // Темно-синий цвет
+                          color: "#fff", 
+                          "&:hover": { backgroundColor: "#01102c" } // Чуть темнее при наведении
+                        }}
+                      >
                         Prev &lt;
                       </Button>
                       <TextField
@@ -263,7 +279,16 @@ const Campaigns = () => {
                           value={emails[currentIndex]}
                           InputProps={{ readOnly: true }}
                       />
-                      <Button variant="contained" onClick={handleNext} disabled={currentIndex === emails.length - 1}>
+                      <Button 
+                        variant="contained" 
+                        onClick={handleNext} 
+                        disabled={currentIndex === emails.length - 1}
+                        sx={{ 
+                          backgroundColor: "#1E56A0", // Темно-синий цвет
+                          color: "#fff", 
+                          "&:hover": { backgroundColor: "#01102c" } // Чуть темнее при наведении
+                        }}
+                        >
                           Next &gt;
                       </Button>
                   </div>

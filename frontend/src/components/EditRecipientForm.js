@@ -50,7 +50,7 @@ const EditRecipientForm = () => {
       .then(() => {
         setMessage({ text: "Recipient updated successfully!", severity: "success" });
         setOpenSnackbar(true);
-        setTimeout(() => navigate("/recipient-groups"), 1500);
+        setTimeout(() => navigate("/dashboard/recipient-groups"), 1500);
       })
       .catch((error) => {
         console.error("Error updating recipient:", error);
@@ -137,7 +137,7 @@ const EditRecipientForm = () => {
                   color: "#011843",
                   "&:hover": { backgroundColor: "#011843", color: "#fff" }
                 }} 
-                onClick={() => navigate("/recipient-groups")}
+                onClick={() => navigate("/dashboard/recipient-groups")}
               >
                 Cancel
               </Button>

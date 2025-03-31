@@ -69,7 +69,7 @@ const SenderList = () => {
               >
                 <DeleteIcon />
               </IconButton>
-              <Link to={`/edit-sender/${sender.id}`}>
+              <Link to={`/dashboard/edit-sender/${sender.id}`}>
                 <Button variant="outlined" color="primary" size="small">
                   <EditIcon /> Edit
                 </Button>

@@ -29,7 +29,7 @@ const RecipientGroupList = () => {
   }, []);
 
   const handleSelectGroup = (groupId) => {
-    navigate(`/recipient-groups/${groupId}`);
+    navigate(`/dashboard/recipient-groups/${groupId}`);
   };
 
   const handleDeleteGroup = (groupId) => {

@@ -50,7 +50,7 @@ const EditSenderForm = () => {
       .then(() => {
         setMessage({ text: "Sender updated successfully!", severity: "success" });
         setOpenSnackbar(true);
-        setTimeout(() => navigate("/senders"), 1500);
+        setTimeout(() => navigate("/dashboard/senders"), 1500);
       })
       .catch((error) => {
         console.error("Error updating sender:", error);
@@ -138,7 +138,7 @@ const EditSenderForm = () => {
                   color: "#011843",
                   "&:hover": { backgroundColor: "#011843", color: "#fff" }
                 }} 
-                onClick={() => navigate("/senders")}
+                onClick={() => navigate("/dashboard/senders")}
               >
                 Cancel
               </Button>

@@ -139,7 +139,6 @@ const AddSenderForm = () => {
             fullWidth
             value={testEmail}
             onChange={(e) => setTestEmail(e.target.value)}
-            required
             sx={{ marginBottom: 3 }}
           />
 

@@ -109,6 +109,7 @@ function App() {
       
         fetchData();
       }, []);
+      
 
     return (
         <Router>
