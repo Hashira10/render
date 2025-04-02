@@ -7,13 +7,18 @@ def generate_phishing_email(subject, employee_name):
 
     # Dynamic and more flexible prompt including messenger and phishing link
     prompt = f"""
-    Generate a phishing email with the subject '{subject}'. 
+    Generate several phishing emails in HTML format with the subject '{subject}'.
+    - Start the whole message with <!DOCTYPE html> and just separate them with "-----" 
     - Address the recipient by their name: {employee_name}.
     - Make it look urgent and professional. 
     - Use varied opening lines and realistic email formatting.
     - Use different tones (polite, urgent, threatening, or informative).
     - Ensure the email sounds professional, urgent, or informative based on the subject.
+    - The email must **only** contain the placeholders [Recipient's Name] and [Phishing Link].
+    - Do not include placeholders like [Bank Name], [Company Name], [Unique Code], [Phone Number], [Email Address], or any other entity names.
     - The email should feel legitimate, as if coming from a trusted source (e.g., bank, IT support, HR department).
+    - Do not include a signature with any entity name, phone number, or email.
+    - The closing of the email should be generic, like Best regards, appropriate department name without any organization name.
     - Avoid repeating common phrases.
     """
 

@@ -3,7 +3,7 @@ from .models import Sender, RecipientGroup, Recipient, Message, ClickLog, Creden
 from .serializers import SenderSerializer, RecipientGroupSerializer, RecipientSerializer, MessageSerializer, ClickLogSerializer, CredentialLogSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from django.core.mail import get_connection, EmailMessage
+from django.core.mail import get_connection, EmailMessage, EmailMultiAlternatives
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -18,7 +18,6 @@ from .utils import generate_phishing_email
 from django.urls import reverse
 import threading
 import random, string, json, logging
-
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +81,14 @@ class RecipientGroupViewSet(viewsets.ModelViewSet):
         group.delete()
         logger.info(f"Group {group.name} deleted successfully.")
         return Response(status=204)
+
+    @action(detail=True, methods=['get'])
+    def recipients(self, request, pk=None):
+        group = self.get_object()
+        recipients = group.recipients.all()
+        serializer = RecipientSerializer(recipients, many=True)
+        return Response(serializer.data)
+
 
 
 class RecipientViewSet(viewsets.ModelViewSet):
@@ -208,15 +215,20 @@ class MessageViewSet(viewsets.ModelViewSet):
             for recipient in recipients:
                 tracking_link = f"{host}{reverse('track_click', args=[recipient.id, message.id, platform])}"
 
-                email_body = f"{body}\n\n🔗 Click here: {tracking_link}" if use_template else f"{body}\n\n{tracking_link}"
+                email_body = body.replace("[Phishing Link]", tracking_link)
+                
+                recipient_name = f"{recipient.first_name} {recipient.last_name}"
+                email_body = email_body.replace("[Recipient's Name]", recipient_name)
 
-                email = EmailMessage(
+
+                email = EmailMultiAlternatives(
                     subject=subject,
                     body=email_body,
                     from_email=sender.smtp_username,
                     to=[recipient.email],
                     connection=connection
                 )
+                email.attach_alternative(email_body, "text/html")
 
                 thread = threading.Thread(target=send_email_async, args=(email,))
                 thread.start()

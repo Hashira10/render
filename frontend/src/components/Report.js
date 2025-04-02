@@ -66,6 +66,7 @@ const Report = () => {
 
         messageData.forEach((message) => {
           const campaign = message.campaign_name;
+          const campaignId = message.id;
           const template = message.subject;
           const group = message.recipient_group.name;
 
@@ -100,6 +101,7 @@ const Report = () => {
           
           if (!groupedData[campaign]) {
             groupedData[campaign] = {
+              id: campaignId,
               name: campaign,
               totalRecipients: 0,
               uniqueClickUsers: new Set(),
@@ -201,7 +203,11 @@ const Report = () => {
             </Typography>
             <Grid container spacing={2} justifyContent="center">
               {Object.entries(groupedLogs)
-                .sort(([, a], [, b]) => (a.id || 0) - (b.id || 0))
+                .sort(([, a], [, b]) => {
+                  const idA = a?.id ?? 0; // Защита от undefined
+                  const idB = b?.id ?? 0;
+                  return idB - idA; // От новых к старым
+                })
                 .map(([campaign]) => (
                   <Grid item key={campaign}>
                     <Button

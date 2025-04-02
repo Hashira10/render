@@ -71,7 +71,7 @@ const Campaigns = () => {
 
     setLoading(true);
     try {
-         const previewResponse = await fetch(`${API_BASE_URL}/api/messages/preview/`, {
+        const previewResponse = await fetch(`${API_BASE_URL}/api/messages/preview/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -89,8 +89,6 @@ const Campaigns = () => {
         throw new Error(previewData.detail || "Error getting message preview");
       }
 
-      const phishingLink = generateLinks(body, platform, previewData.recipient_id, previewData.message_id, customHost || API_BASE_URL);
-
       const response = await fetch(`${API_BASE_URL}/generate/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -104,7 +102,12 @@ const Campaigns = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setBody(data.email);
+        const cleanedBody = data.email
+          .replace(/^(?:\*\*Subject:\*\* .*\n|Subject: .*)\n?/gm, '') // удаляет строку с Subject
+          .replace(/^```html\s*/, '') // удаляет ```html в начале
+          .replace(/```$/, '') // удаляет ``` в конце
+          .trim();
+        setBody(cleanedBody);
         setMessage({ text: "Email generated successfully!", severity: "success" });
       } else {
         setMessage({ text: data.error || "Failed to generate email.", severity: "error" });
@@ -117,14 +120,20 @@ const Campaigns = () => {
     }
   };
 
-  const emails = body.split('---' || '--');
+  const emails = body.split(/-----|\--/);
 
   const handleNext = () => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % emails.length);
+    setCurrentIndex((prevIndex) => {
+      const nextIndex = prevIndex + 1;
+      return nextIndex < emails.length ? nextIndex : 0; // Переход к следующему письму
+    });
   };
-
+  
   const handlePrev = () => {
-      setCurrentIndex((prevIndex) => (prevIndex - 1 + emails.length) % emails.length);
+    setCurrentIndex((prevIndex) => {
+      const prevIndexAdjusted = prevIndex - 1;
+      return prevIndexAdjusted >= 0 ? prevIndexAdjusted : emails.length - 1; // Переход к предыдущему письму
+    });
   };
   
   const handleSendMessage = async (e) => {
@@ -135,6 +144,8 @@ const Campaigns = () => {
       setOpenSnackbar(true);
       return;
     }
+
+    const selectedEmail = emails[currentIndex];
   
     setSending(true);
   
@@ -148,8 +159,9 @@ const Campaigns = () => {
           recipient_group: selectedGroup,
           campaign_name: campaignName,
           subject,
-          body,
-          platform
+          body: selectedEmail,
+          platform,
+          host: customHost || API_BASE_URL,
         }),
       });
   

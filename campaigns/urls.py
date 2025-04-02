@@ -28,7 +28,7 @@ router = DefaultRouter()
 router.register(r'senders', SenderViewSet)
 router.register(r'recipient_groups', RecipientGroupViewSet)
 router.register(r'recipients', RecipientViewSet)
-router.register(r'messages', MessageViewSet)
+router.register(r'messages', MessageViewSet, basename="messages")
 router.register(r'click_logs', ClickLogViewSet)
 router.register(r'credential_logs', CredentialLogViewSet)
 
