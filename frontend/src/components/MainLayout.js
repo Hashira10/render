@@ -54,6 +54,7 @@ const MainLayout = ({ setIsAuthenticated }) => {
                     <li><Link to="/dashboard/recipient-groups">Recipient Group List</Link></li>
                     <li><Link to="/dashboard/send-message">Campaigns</Link></li>
                     <li><Link to="/dashboard/report">Report</Link></li>
+                    <li><Link to="/dashboard/change-password">Change Password</Link></li>
                     <li><Link to="/auth" onClick={handleLogout}>Logout</Link></li>
                 </ul>
             </nav>

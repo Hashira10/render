@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.core.mail import get_connection, EmailMessage, EmailMultiAlternatives
 
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
@@ -18,6 +18,10 @@ from .utils import generate_phishing_email
 from django.urls import reverse
 import threading
 import random, string, json, logging
+from django.contrib.auth.hashers import check_password
+
+from rest_framework.decorators import api_view
+from rest_framework import status
 
 logger = logging.getLogger(__name__)
 
@@ -430,6 +434,9 @@ def login_view(request):
     if request.method == "OPTIONS":
         return add_cors_headers(JsonResponse({"message": "CORS preflight success"}))
 
+    if request.method == "GET":
+        return add_cors_headers(JsonResponse({"message": "Login page (UI should be here)"}, status=200))
+
     if request.method != "POST":
         return add_cors_headers(JsonResponse({"error": "Only POST requests are allowed."}, status=405))
 
@@ -440,6 +447,8 @@ def login_view(request):
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
+        print("User authenticated:", request.user.is_authenticated)
+        print("Session ID after login:", request.session.session_key)
         return add_cors_headers(JsonResponse({"message": "Login successful"}, status=200))
 
     return add_cors_headers(JsonResponse({"error": "Invalid credentials"}, status=401))
@@ -454,3 +463,31 @@ def logout_view(request):
         return add_cors_headers(JsonResponse({"message": "Logout successful"}, status=200))
 
     return add_cors_headers(JsonResponse({"error": "Only POST requests are allowed."}, status=405))
+
+@api_view(['POST'])
+def change_password_view(request):
+    # Получаем данные из запроса
+    current_password = request.data.get('current_password')
+    new_password = request.data.get('new_password')
+    confirm_password = request.data.get('confirm_password')
+
+    # Проверяем, все ли данные переданы
+    if not current_password or not new_password or not confirm_password:
+        return Response({'message': 'All fields are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Проверяем, совпадают ли новый пароль и подтверждение
+    if new_password != confirm_password:
+        return Response({'message': 'New password and confirmation do not match.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Получаем пользователя по текущей сессии
+    user = request.user
+
+    # Проверяем, правильный ли текущий пароль
+    if not user.check_password(current_password):
+        return Response({'message': 'Current password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Устанавливаем новый пароль
+    user.set_password(new_password)
+    user.save()
+
+    return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)

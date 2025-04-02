@@ -65,10 +65,12 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SECURE = False  # Отключи, если используешь HTTP
+SESSION_COOKIE_HTTPONLY = False  # Разрешить JS видеть куку
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000'
-]
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 CORS_ALLOW_HEADERS = [
     "content-type",

@@ -4,7 +4,7 @@ from .views import (
     SenderViewSet, RecipientGroupViewSet, RecipientViewSet, MessageViewSet,
     ClickLogViewSet, CredentialLogViewSet, track_click, capture_credentials,
     login_template_view, send_test_email, generate_email_view,
-    signup_view, login_view, logout_view,
+    signup_view, login_view, logout_view, change_password_view,
     # change_password_view  # ✅ Add authentication views
 )
 from rest_framework import permissions
@@ -46,6 +46,7 @@ urlpatterns = [
     path("signup/", signup_view, name="signup"),
     path("login/", login_view, name="login"),
     path("logout/", logout_view, name="logout"),
+    path("change-password/", change_password_view, name="change-password"),
 ]
 
 
