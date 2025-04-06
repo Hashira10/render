@@ -14,7 +14,7 @@ import EditRecipientForm from "./components/EditRecipientForm";
 import Campaigns from "./components/Campaigns";
 import Report from "./components/Report";
 import CampaignReport from "./components/CampaignReport";
-import ChangePassword from "./components/ChangePassword";
+import Profile from "./components/Profile";
 import { API_BASE_URL } from "./config";
 import "./App.css";
 
@@ -30,7 +30,7 @@ function App() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        axios.get("http://127.0.0.1:8000/check-auth/", { withCredentials: true })
+        axios.get(`${API_BASE_URL}/check-auth/`, { withCredentials: true })
             .then((response) => {
                 if (response.status === 200) {
                     setIsAuthenticated(true);
@@ -133,7 +133,7 @@ function App() {
                     <Route path="send-message" element={<Campaigns />} />
                     <Route path="report" element={<Report />} />
                     <Route path="/dashboard/campaign/:campaignName" element={<CampaignReport groupedLogs={groupedLogs} />} />
-                    <Route path="/dashboard/change-password" element={<ChangePassword />} />
+                    <Route path="/dashboard/profile" element={<Profile />} />
 
                     <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Route>

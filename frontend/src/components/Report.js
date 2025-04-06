@@ -158,7 +158,7 @@ const Report = () => {
   return (
     <Container maxWidth="lg" sx={{ marginBottom: 8 }}>
       <Paper elevation={3} sx={{ padding: 4, marginTop: 4 }}>
-        <Typography variant="h4" align="center" sx={{ fontWeight: "bold", marginBottom: 3 }}>
+        <Typography variant="h5" align="center" sx={{ marginBottom: 3 }}>
           Campaign Report Overview
         </Typography>
   

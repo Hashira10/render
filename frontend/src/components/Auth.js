@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
-import "./Auth.css"; // ✅ Ensure styles are applied
+import { useNavigate } from "react-router-dom"; 
+import "./Auth.css"; 
+import { API_BASE_URL } from '../config';
 
 const Auth = ({ setIsAuthenticated }) => {
     const [username, setUsername] = useState("");
@@ -12,7 +13,7 @@ const Auth = ({ setIsAuthenticated }) => {
     // ✅ Signup function
     const handleSignup = async () => {
         try {
-            const response = await axios.post("http://127.0.0.1:8000/signup/", { username, password }, { withCredentials: true });
+            const response = await axios.post(`${API_BASE_URL}/signup/`, { username, password }, { withCredentials: true });
             if (response.status === 201) {
                 const { username, password } = response.data; // Extract credentials
                 setAuthStatus(`Signup successful!\nUsername: ${username} Password: ${password} Please log in.`);
@@ -22,11 +23,10 @@ const Auth = ({ setIsAuthenticated }) => {
         }
     };
 
-    // ✅ Login function with redirect to `/dashboard`
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://127.0.0.1:8000/login/", { username, password }, { withCredentials: true });
+            const response = await axios.post(`${API_BASE_URL}/login/`, { username, password }, { withCredentials: true });
             if (response.status === 200) {
                 setIsAuthenticated(true);
                 navigate("/dashboard");

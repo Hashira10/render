@@ -121,7 +121,7 @@ const AddRecipientGroupForm = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" sx={{ marginBottom: 6 }}>
       <Paper elevation={3} sx={{ padding: 3, marginTop: 4 }}>
         <Typography variant="h5" gutterBottom>
           Add Recipient Group

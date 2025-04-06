@@ -64,10 +64,18 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
-SESSION_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SECURE = False  # Отключи, если используешь HTTP
+
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = False
+
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False
+
 SESSION_COOKIE_HTTPONLY = False  # Разрешить JS видеть куку
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
@@ -84,6 +92,7 @@ CORS_ALLOW_METHODS = [
     'PUT',
     "DELETE",
     'OPTIONS',
+    "PATCH",
 ]
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]

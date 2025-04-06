@@ -1,9 +1,10 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from .models import Sender, RecipientGroup, Recipient, Message, ClickLog, CredentialLog
 from .serializers import SenderSerializer, RecipientGroupSerializer, RecipientSerializer, MessageSerializer, ClickLogSerializer, CredentialLogSerializer
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from django.core.mail import get_connection, EmailMessage, EmailMultiAlternatives
+from rest_framework.permissions import IsAuthenticated
 
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.models import User
@@ -20,8 +21,6 @@ import threading
 import random, string, json, logging
 from django.contrib.auth.hashers import check_password
 
-from rest_framework.decorators import api_view
-from rest_framework import status
 
 logger = logging.getLogger(__name__)
 
@@ -466,28 +465,44 @@ def logout_view(request):
 
 @api_view(['POST'])
 def change_password_view(request):
-    # Получаем данные из запроса
+
     current_password = request.data.get('current_password')
     new_password = request.data.get('new_password')
     confirm_password = request.data.get('confirm_password')
 
-    # Проверяем, все ли данные переданы
     if not current_password or not new_password or not confirm_password:
         return Response({'message': 'All fields are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Проверяем, совпадают ли новый пароль и подтверждение
     if new_password != confirm_password:
         return Response({'message': 'New password and confirmation do not match.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Получаем пользователя по текущей сессии
     user = request.user
 
-    # Проверяем, правильный ли текущий пароль
     if not user.check_password(current_password):
         return Response({'message': 'Current password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Устанавливаем новый пароль
     user.set_password(new_password)
     user.save()
 
     return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def change_username_view(request):
+    new_username = request.data.get('new_username')
+
+    if not new_username:
+        return Response({"message": "New username is required."}, status=400)
+
+    if User.objects.filter(username=new_username).exclude(id=request.user.id).exists():
+        return Response({"message": "Username already taken."}, status=400)
+
+    request.user.username = new_username
+    request.user.save()
+
+    return Response({"message": "Username updated successfully.", "username": request.user.username}, status=200)
+
+
+@login_required
+def current_user_view(request):
+    return JsonResponse({"username": request.user.username})
