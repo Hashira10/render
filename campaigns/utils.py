@@ -1,8 +1,9 @@
 import os
 from openai import OpenAI
+import google.generativeai as genai
 
 
-def generate_phishing_email(subject, employee_name):
+def generate_phishing_email_open_ai(subject, employee_name):
     client = OpenAI(api_key=os.getenv("OPEN_AI_API_KEY"))
 
     # Dynamic and more flexible prompt including messenger and phishing link
@@ -14,7 +15,7 @@ def generate_phishing_email(subject, employee_name):
     - Use varied opening lines and realistic email formatting.
     - Use different tones (polite, urgent, threatening, or informative).
     - Ensure the email sounds professional, urgent, or informative based on the subject.
-    - The email must **only** contain the placeholders [Recipient's Name] and [Phishing Link].
+    - The email must **only** contain the placeholders [Recipient's Name] and [Suspicious Link].
     - Do not include placeholders like [Bank Name], [Company Name], [Unique Code], [Phone Number], [Email Address], or any other entity names.
     - The email should feel legitimate, as if coming from a trusted source (e.g., bank, IT support, HR department).
     - Do not include a signature with any entity name, phone number, or email.
@@ -35,3 +36,25 @@ def generate_phishing_email(subject, employee_name):
     email_body = response.choices[0].message.content.strip()
 
     return email_body
+
+def generate_phishing_email_gemini(subject, employee_name):
+    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+    # Dynamic and more flexible prompt including messenger and phishing link
+    prompt = f"""
+    Generate several formal HTML emails intended for cybersecurity awareness training, with the subject '{subject}'.
+    - Start each email with <!DOCTYPE html> and separate them using "-----".
+    - Address the recipient by their name: {employee_name}.
+    - The emails should demonstrate common tactics used in suspicious or deceptive messages.
+    - Use varied tones: polite, urgent, slightly alarming, or overly helpful.
+    - Do not include real brand names, phone numbers, or email addresses.
+    - The email must **only** contain the placeholders [Recipient's Name] and [Suspicious Link].
+    - Do not include placeholders like [Bank Name], [Company Name], [Unique Code], [Phone Number], [Email Address], or any other entity names.
+    - Make the messages look authentic but slightly questionable upon closer inspection.
+    - Avoid adding organization names or real contact details in the signature.
+    - Close the emails with generic endings such as "Regards" or "Support Team".
+    """
+
+    model = genai.GenerativeModel("gemini-2.0-flash")
+    response = model.generate_content(prompt)
+    return response.text.strip()

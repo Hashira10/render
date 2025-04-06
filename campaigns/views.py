@@ -6,7 +6,7 @@ from rest_framework.decorators import action, api_view, permission_classes
 from django.core.mail import get_connection, EmailMessage, EmailMultiAlternatives
 from rest_framework.permissions import IsAuthenticated
 
-from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
@@ -15,11 +15,10 @@ from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.shortcuts import render, redirect
-from .utils import generate_phishing_email
+from .utils import generate_phishing_email_open_ai, generate_phishing_email_gemini
 from django.urls import reverse
 import threading
 import random, string, json, logging
-from django.contrib.auth.hashers import check_password
 
 
 logger = logging.getLogger(__name__)
@@ -176,7 +175,6 @@ class MessageViewSet(viewsets.ModelViewSet):
         campaign_name = request.data.get("campaign_name", "Unnamed Campaign")
         subject = request.data.get("subject")
         body = request.data.get("body")
-        use_template = request.data.get("use_template", False)
         platform = request.data.get("platform", "facebook")
         host = request.data.get("host", settings.BASE_URL)
 
@@ -218,7 +216,7 @@ class MessageViewSet(viewsets.ModelViewSet):
             for recipient in recipients:
                 tracking_link = f"{host}{reverse('track_click', args=[recipient.id, message.id, platform])}"
 
-                email_body = body.replace("[Phishing Link]", tracking_link)
+                email_body = body.replace("[Suspicious Link]", tracking_link)
                 
                 recipient_name = f"{recipient.first_name} {recipient.last_name}"
                 email_body = email_body.replace("[Recipient's Name]", recipient_name)
@@ -369,13 +367,16 @@ def generate_email_view(request):
         data = json.loads(request.body)
         subject = data.get("subject", "Important Notice")
         employee_name = data.get("employee_name", "Valued Customer")  # Default fallback
-        phishing_link = data.get("phishing_link", "https://secure-update.com")  # Default fallback
+        model = data.get("model", "openai").lower()
 
         if not subject.strip():
             return JsonResponse({"error": "Subject is required."}, status=400)
 
-        # Generate phishing email
-        email_body = generate_phishing_email(subject, employee_name)
+        # Generate phishing email using the selected model
+        if model == "gemini":
+            email_body = generate_phishing_email_gemini(subject, employee_name)
+        else:
+            email_body = generate_phishing_email_open_ai(subject, employee_name)
 
         return JsonResponse({"email": email_body}, json_dumps_params={"indent": 4})
 

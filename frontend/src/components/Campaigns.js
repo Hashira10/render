@@ -9,6 +9,7 @@ const Campaigns = () => {
   const [selectedSender, setSelectedSender] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [subject, setSubject] = useState("");
+  const [selectedModel, setSelectedModel] = useState("openai");
   const [body, setBody] = useState("");
   const [useTemplate, setUseTemplate] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -95,6 +96,7 @@ const Campaigns = () => {
           body: JSON.stringify({
             subject,
             employee_name: selectedSender,
+            model: selectedModel || "openai"
           }),
       });
 
@@ -103,12 +105,14 @@ const Campaigns = () => {
 
       if (response.ok) {
         const cleanedBody = data.email
-          .replace(/^(?:\*\*Subject:\*\* .*\n|Subject: .*)\n?/gm, '') // удаляет строку с Subject
-          .replace(/^```html\s*/, '') // удаляет ```html в начале
-          .replace(/```$/, '') // удаляет ``` в конце
+          .replace(/^(?:\*\*Subject:\*\* .*|Subject: .*)\n?/gm, '') // Remove any Subject lines
+          .replace(/^\s*```(?:html)?\s*/gm, '') // Remove opening ``` or ```html with optional spaces
+          .replace(/\s*```$/gm, '') // Remove closing ``` with optional spaces
           .trim();
         setBody(cleanedBody);
         setMessage({ text: "Email generated successfully!", severity: "success" });
+
+        console.log(cleanedBody)
       } else {
         setMessage({ text: data.error || "Failed to generate email.", severity: "error" });
       }
@@ -249,6 +253,22 @@ const Campaigns = () => {
 
               <Grid item xs={12}>
                 <TextField label="Subject" fullWidth value={subject} onChange={(e) => setSubject(e.target.value)} required />
+              </Grid>
+
+              <Grid item xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id="model-select-label">AI Model</InputLabel>
+                    <Select
+                      labelId="model-select-label"
+                      id="model-select"
+                      value={selectedModel}
+                      label="AI Model"
+                      onChange={(e) => setSelectedModel(e.target.value)}
+                    >
+                      <MenuItem value="openai">OpenAI GPT-4o</MenuItem>
+                      <MenuItem value="gemini">Gemini 2.0 Flash</MenuItem>
+                    </Select>
+                  </FormControl>
               </Grid>
 
               <Grid item xs={12}>
