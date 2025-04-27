@@ -75,7 +75,15 @@ const RecipientList = () => {
 
   return (
     <Container maxWidth="md">
-      <Paper elevation={2} sx={{ padding: 2, marginTop: 3 }}>
+      <Paper elevation={2} 
+      sx={{
+        padding: 3,
+        marginTop: 3,
+        backgroundColor: '#f9f9f9', // Цвет фона для Paper
+        borderRadius: 3,
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+      }}
+      >
           <Typography variant="h6">Create New Recipient</Typography>
           <Grid container spacing={1} sx={{ marginTop: 2 }}>
             <Grid item xs={6}>
@@ -127,7 +135,7 @@ const RecipientList = () => {
                     width: "180px", 
                     height: "36px", 
                     fontSize: "0.875rem",
-                    background: "linear-gradient(135deg, #011843,rgb(127, 161, 220))", 
+                    background: "linear-gradient(135deg, #06141B, #4A5C6A)", 
                     color: "#fff",
                     "&:hover": { background: "linear-gradient(135deg, #01102c,rgb(137, 174, 216))" } 
               }}

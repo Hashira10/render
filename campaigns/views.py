@@ -485,6 +485,8 @@ def change_password_view(request):
     user.set_password(new_password)
     user.save()
 
+    login(request, user)
+
     return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)
 
 @api_view(['PATCH'])
@@ -500,6 +502,8 @@ def change_username_view(request):
 
     request.user.username = new_username
     request.user.save()
+
+    login(request, request.user)
 
     return Response({"message": "Username updated successfully.", "username": request.user.username}, status=200)
 

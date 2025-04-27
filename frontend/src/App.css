@@ -2,25 +2,23 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #eef2f7;
-  color: #333;
-  line-height: 1.6;
-  
-  
+  background-color: #9BA8AB; /* Светлый цвет из палитры */
+  color: #253745; /* Тёмно-синий цвет */
+  line-height: 1.4; /* Дополнительно уменьшен интервал */
 }
 
 h1 {
   text-align: center;
-  padding: 20px;
-  background: linear-gradient(135deg, #011843, #bac8e0);
+  padding: 15px; /* Уменьшен отступ */
+  background: linear-gradient(135deg, #06141B, #4A5C6A); /* Тёмный градиент */
   color: white;
   margin: 0;
-  font-size: 28px;
+  font-size: 20px; /* Уменьшенный размер шрифта */
 }
 
 nav {
-  background-color: #ffffff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9; /* Темно-синий цвет */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Меньший тень */
   position: sticky;
   top: 0;
   width: 100%;
@@ -31,37 +29,36 @@ nav ul {
   list-style-type: none;
   display: flex;
   justify-content: center;
-  padding: 10px 0;
+  padding: 6px 0; /* Меньше отступы */
   margin: 0;
 }
 
 nav li {
-  margin: 0 15px;
+  margin: 0 10px; /* Уменьшено расстояние */
 }
 
 nav a {
   text-decoration: none;
-  color: #333;
+  color: #11212D; /* Светлый серо-синий */
   font-weight: 500;
-  padding: 12px 18px;
+  padding: 8px 12px; /* Меньше отступы */
   display: block;
   border-radius: 6px;
   transition: all 0.3s ease-in-out;
 }
 
 nav a:hover {
-  background-color: #b6bee8;
+  background-color: #4A5C6A; /* Холодный синий оттенок */
   color: white;
 }
 
 .container {
-  max-width: 1000px;
-  margin: 40px auto;
-  padding: 25px;
+  max-width: 800px; /* Меньше максимальная ширина */
+  margin: 20px auto; /* Уменьшен отступ сверху и снизу */
+  padding: 15px; /* Меньше отступы */
   background-color: white;
-  border-radius: 10px;
-  
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 6px; /* Меньше радиус скругления */
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); /* Меньше тень */
 }
 
 @media (max-width: 768px) {
@@ -71,18 +68,16 @@ nav a:hover {
   }
 
   nav li {
-    margin: 10px 0;
+    margin: 6px 0; /* Уменьшен отступ между элементами */
   }
 
   .container {
-    margin: 20px;
-    padding: 15px;
+    margin: 10px;
+    padding: 8px; /* Меньше отступы на мобильных */
   }
 
   h1 {
-    font-size: 24px;
-    padding: 15px;
+    font-size: 18px; /* Ещё меньше размер шрифта */
+    padding: 8px; /* Уменьшены отступы */
   }
 }
-
-

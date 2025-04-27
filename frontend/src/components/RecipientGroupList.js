@@ -50,7 +50,15 @@ const RecipientGroupList = () => {
 
   return (
     <Container maxWidth="md">
-      <Paper elevation={3} sx={{ padding: 3, marginTop: 4 }}>
+      <Paper elevation={3} 
+      sx={{
+        padding: 3,
+        marginTop: 3,
+        backgroundColor: '#f9f9f9', // Цвет фона для Paper
+        borderRadius: 3,
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+      }}
+      >
         <Typography variant="h5" gutterBottom>
           Recipient Group List
         </Typography>

@@ -84,7 +84,14 @@ const AddSenderForm = () => {
 
   return (
     <Container maxWidth="sm" sx={{ marginBottom: 6 }}>
-      <Paper elevation={3} sx={{ padding: 3, marginTop: 4 }}>
+      <Paper elevation={3} sx={{
+      padding: 3,
+      marginTop: 3,
+      backgroundColor: '#f9f9f9', // Цвет фона для Paper
+      borderRadius: 3,
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+    }}
+    >
         <Typography variant="h5" gutterBottom>
           Add Sender
         </Typography>
@@ -149,7 +156,7 @@ const AddSenderForm = () => {
                 variant="contained" 
                 sx={{ 
                   width: "100%",
-                  background: "linear-gradient(135deg, #011843,rgb(127, 161, 220))",
+                  background: "linear-gradient(135deg, #06141B, #4A5C6A)",
                   color: "#fff",
                   "&:hover": { background: "linear-gradient(135deg, #01102c,rgb(137, 174, 216))" }
                 }}

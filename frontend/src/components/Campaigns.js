@@ -280,9 +280,9 @@ const Campaigns = () => {
                     width: "180px",
                     height: "36px", 
                     fontSize: "0.875rem",
-                    background: sending ? "gray" : "linear-gradient(135deg, #011843,rgb(127, 161, 220))", 
+                    background: sending ? "gray" : "linear-gradient(135deg, #06141B, #4A5C6A)", 
                     color: "#fff", 
-                    "&:hover": { background: sending ? "gray" : "linear-gradient(135deg, #01102c,rgb(137, 174, 216))" }
+                    "&:hover": { background: sending ? "gray" : "linear-gradient(135deg, #253745,rgb(137, 174, 216))" }
                   }}
                 >
                   {loading ? <CircularProgress size={20} sx={{ color: "white", marginRight: 1 }} /> : "Generate Email"}
@@ -297,9 +297,9 @@ const Campaigns = () => {
                         onClick={handlePrev} 
                         disabled={currentIndex === 0}
                         sx={{ 
-                          backgroundColor: "#1E56A0", // Темно-синий цвет
+                          backgroundColor: "#4A5C6A", // Темно-синий цвет
                           color: "#fff", 
-                          "&:hover": { backgroundColor: "#01102c" } // Чуть темнее при наведении
+                          "&:hover": { backgroundColor: "#253745" } // Чуть темнее при наведении
                         }}
                       >
                         Prev &lt;
@@ -316,9 +316,9 @@ const Campaigns = () => {
                         onClick={handleNext} 
                         disabled={currentIndex === emails.length - 1}
                         sx={{ 
-                          backgroundColor: "#1E56A0", // Темно-синий цвет
+                          backgroundColor: "#4A5C6A", // Темно-синий цвет
                           color: "#fff", 
-                          "&:hover": { backgroundColor: "#01102c" } // Чуть темнее при наведении
+                          "&:hover": { backgroundColor: "#253745" } // Чуть темнее при наведении
                         }}
                         >
                           Next &gt;
@@ -336,9 +336,9 @@ const Campaigns = () => {
                       width: "180px",
                       height: "36px",
                       fontSize: "0.875rem",
-                      background: sending ? "gray" : "linear-gradient(135deg, #011843,rgb(127, 161, 220))",
+                      background: "#253745",
                       color: "#fff",
-                      "&:hover": { background: sending ? "gray" : "linear-gradient(135deg, #01102c,rgb(137, 174, 216))" }
+                      "&:hover": { background: sending ? "gray" : "linear-gradient(135deg, #253745,rgb(137, 174, 216))" }
                     }}
                   >
                     {sending ? (

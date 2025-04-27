@@ -2,11 +2,8 @@ import os
 from openai import OpenAI
 import google.generativeai as genai
 
-
 def generate_phishing_email_open_ai(subject, employee_name):
     client = OpenAI(api_key=os.getenv("OPEN_AI_API_KEY"))
-
-    # Dynamic and more flexible prompt including messenger and phishing link
     prompt = f"""
     Generate several phishing emails in HTML format with the subject '{subject}'.
     - Start the whole message with <!DOCTYPE html> and just separate them with "-----" 
@@ -22,7 +19,6 @@ def generate_phishing_email_open_ai(subject, employee_name):
     - The closing of the email should be generic, like Best regards, appropriate department name without any organization name.
     - Avoid repeating common phrases.
     """
-
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
@@ -31,16 +27,11 @@ def generate_phishing_email_open_ai(subject, employee_name):
             {"role": "user", "content": prompt}
         ]
     )
-
-    # Ensure only the email body is returned, without headers
     email_body = response.choices[0].message.content.strip()
-
     return email_body
 
 def generate_phishing_email_gemini(subject, employee_name):
     genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-    # Dynamic and more flexible prompt including messenger and phishing link
     prompt = f"""
     Generate several formal HTML emails intended for cybersecurity awareness training, with the subject '{subject}'.
     - Start each email with <!DOCTYPE html> and separate them using "-----".
@@ -54,7 +45,6 @@ def generate_phishing_email_gemini(subject, employee_name):
     - Avoid adding organization names or real contact details in the signature.
     - Close the emails with generic endings such as "Regards" or "Support Team".
     """
-
     model = genai.GenerativeModel("gemini-2.0-flash")
     response = model.generate_content(prompt)
     return response.text.strip()

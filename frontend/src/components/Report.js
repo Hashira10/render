@@ -156,78 +156,112 @@ const Report = () => {
   const COLORS = ["#7b8bff", "#242c6c"];
 
   return (
-    <Container maxWidth="lg" sx={{ marginBottom: 8 }}>
-      <Paper elevation={3} sx={{ padding: 4, marginTop: 4 }}>
-        <Typography variant="h5" align="center" sx={{ marginBottom: 3 }}>
-          Campaign Report Overview
+    <Container maxWidth="lg" sx={{ marginBottom: 4 }}>
+  <Paper
+    elevation={3}
+    sx={{
+      padding: 3,
+      marginTop: 3,
+      backgroundColor: '#f9f9f9', // Цвет фона для Paper
+      borderRadius: 3,
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+    }}
+  >
+    <Typography
+      variant="h5"
+      align="center"
+      sx={{
+        marginBottom: 2,
+        color: "#25344F", // Цвет текста заголовка
+        fontSize: "24px", // Уменьшенный размер шрифта
+      }}
+    >
+      Campaign Report Overview
+    </Typography>
+
+    {loading && <CircularProgress sx={{ display: "block", margin: "20px auto" }} />}
+    {error && (
+      <Alert severity="error" sx={{ backgroundColor: "#632024", color: "#fff", fontSize: "0.875rem" }}>
+        {error}
+      </Alert>
+    )}
+
+    {!loading && !error && (
+      <>
+        <Grid container spacing={2} sx={{ marginBottom: 2, justifyContent: "center" }}>
+          {[
+            { label: "Most Clicked Platform", value: topTemplate },
+            { label: "Most Clicked Group", value: topClickGroup },
+            { label: "Most Clicked Email Subject", value: topClickedSubject },
+            { label: "Most Credential Submissions Platform", value: topCredentialTemplate },
+            { label: "Most Credential Submission Group", value: topCredentialGroup },
+            { label: "Most Credential Submission Email Subject", value: topCredentialSubject }
+          ].map((item, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Card
+                sx={{
+                  background: "#f0f4f8", // Цвет фона карточки
+                  color: "#333",
+                  borderRadius: "12px",
+                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                  transition: "transform 0.2s ease-in-out",
+                  "&:hover": {
+                    transform: "scale(1.03)",
+                    backgroundColor: "#d1dde7", // Цвет фона при наведении
+                  },
+                }}
+              >
+                <CardContent>
+                  <Typography variant="subtitle2" sx={{ opacity: 0.7, color: "#555", fontSize: "0.875rem" }}>
+                    {item.label}
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{ fontWeight: "bold", color: "#25344F", marginTop: 1, fontSize: "1rem" }}
+                  >
+                    {item.value || "N/A"}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+
+        <Typography variant="h6" align="center" sx={{ marginBottom: 2, color: "#25344F", fontSize: "1rem" }}>
+          Select a Campaign:
         </Typography>
-  
-        {loading && <CircularProgress sx={{ display: "block", margin: "20px auto" }} />}
-        {error && <Alert severity="error">{error}</Alert>}
-  
-        {!loading && !error && (
-          <>
-            <Grid container spacing={3} sx={{ marginBottom: 3, justifyContent: "center" }}>
-              {[
-                { label: "Most Clicked Platform", value: topTemplate },
-                { label: "Most Clicked Group", value: topClickGroup },
-                { label: "Most Clicked Email Subject", value: topClickedSubject },
-                { label: "Most Credential Submissions Platform", value: topCredentialTemplate },
-                { label: "Most Credential Submission Group", value: topCredentialGroup },               
-                { label: "Most Credential Submission Email Subject", value: topCredentialSubject }
-              ].map((item, index) => (
-                <Grid item xs={12} sm={6} md={4} key={index}>
-                  <Card sx={{
-                    background: "#f0f4f8", 
-                    color: "#333", 
-                    borderRadius: "12px",
-                    boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
-                    transition: "transform 0.2s ease-in-out",
-                    "&:hover": { transform: "scale(1.03)" }
-                  }}>
-                    <CardContent>
-                      <Typography variant="subtitle1" sx={{ opacity: 0.7, color: "#555" }}>
-                        {item.label}
-                      </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: "bold", color: "#354d78", marginTop: 1 }}>
-                        {item.value || "N/A"}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-  
-            <Typography variant="h6" align="center" sx={{ marginBottom: 2 }}>
-              Select a Campaign:
-            </Typography>
-            <Grid container spacing={2} justifyContent="center">
-              {Object.entries(groupedLogs)
-                .sort(([, a], [, b]) => {
-                  const idA = a?.id ?? 0; // Защита от undefined
-                  const idB = b?.id ?? 0;
-                  return idB - idA; // От новых к старым
-                })
-                .map(([campaign]) => (
-                  <Grid item key={campaign}>
-                    <Button
-                      variant="contained"
-                      onClick={() => navigate(`/dashboard/campaign/${campaign}`)}
-                      sx={{
-                        background: "#354d78",
-                        color: "#fff",
-                        "&:hover": { background: "linear-gradient(135deg, #01102c, #9fb7d3)" }
-                      }}
-                    >
-                      {campaign}
-                    </Button>
-                  </Grid>
-                ))}
-            </Grid>
-          </>
-        )}
-      </Paper> {/* ✅ Закрывающий тег Paper */}
-    </Container>
+        <Grid container spacing={2} justifyContent="center">
+          {Object.entries(groupedLogs)
+            .sort(([, a], [, b]) => {
+              const idA = a?.id ?? 0; // Защита от undefined
+              const idB = b?.id ?? 0;
+              return idB - idA; // От новых к старым
+            })
+            .map(([campaign]) => (
+              <Grid item key={campaign}>
+                <Button
+                  variant="contained"
+                  onClick={() => navigate(`/dashboard/campaign/${campaign}`)}
+                  sx={{
+                    background: "#4A5C6A", // Цвет кнопки
+                    color: "#fff",
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #253745, #9fb7d3)", // Градиент при наведении
+                    },
+                    fontSize: "0.875rem", // Уменьшение размера шрифта
+                  }}
+                >
+                  {campaign}
+                </Button>
+              </Grid>
+            ))}
+        </Grid>
+      </>
+    )}
+  </Paper>
+</Container>
+
+
   );
   
 };

@@ -153,7 +153,7 @@ const Profile = () => {
                 }}
             >
                 {/* Change Password */}
-                <Box sx={{ flex: 1, minWidth: '300px', marginRight: 4 }}>
+                <Box sx={{ flex: 1, minWidth: '300px', marginLeft: 9 }}>
                     <form onSubmit={handlePasswordChange}>
                         <Typography
                             variant="h6"
@@ -221,7 +221,7 @@ const Profile = () => {
                                 marginTop: 2,
                                 fontSize: '0.875rem',
                                 padding: '6px 12px',
-                                backgroundColor: '#617891',
+                                backgroundColor: '#4A5C6A',
                                 '&:hover': {
                                     backgroundColor: '#4f6174',
                                 },
@@ -235,7 +235,7 @@ const Profile = () => {
                 </Box>
 
                 {/* Change Username */}
-                <Box sx={{ flex: 1, minWidth: '300px' }}>
+                <Box sx={{ flex: 1, minWidth: '300px', marginLeft: 6 }}>
                     <Typography
                         variant="h6"
                         sx={{
@@ -289,7 +289,7 @@ const Profile = () => {
                                 marginTop: 2,
                                 fontSize: '0.875rem',
                                 padding: '6px 12px',
-                                backgroundColor: '#617891',
+                                backgroundColor: '#4A5C6A',
                                 '&:hover': {
                                     backgroundColor: '#4f6174',
                                 },
