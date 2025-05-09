@@ -24,7 +24,9 @@ const SenderList = () => {
 
   useEffect(() => {
     axios
-      .get(`${API_BASE_URL}/api/senders/`)
+      .get(`${API_BASE_URL}/api/senders/`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
       .then((response) => setSenders(response.data))
       .catch((error) => {
         console.error("Error fetching senders:", error);
@@ -32,7 +34,7 @@ const SenderList = () => {
         setOpenSnackbar(true);
       });
   }, []);
-
+  
   const handleDeleteSender = (senderId) => {
     axios
       .delete(`${API_BASE_URL}/api/senders/${senderId}/`)

@@ -21,6 +21,8 @@ import threading
 import random, string, json, logging
 
 
+
+
 logger = logging.getLogger(__name__)
 
 def login_template_view(request, recipient_id, message_id, platform):
@@ -39,8 +41,19 @@ class CredentialLogViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class SenderViewSet(viewsets.ModelViewSet):
-    queryset = Sender.objects.all()
+    queryset = Sender.objects.none()  # Placeholder queryset
     serializer_class = SenderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        logger.info(f"Запрос от пользователя: {user} (ID: {user.id})")
+        # Показываем только отправителей, добавленных текущим пользователем
+        return Sender.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        # Устанавливаем текущего пользователя как владельца записи
+        serializer.save(user=self.request.user)
 
 
 class RecipientGroupViewSet(viewsets.ModelViewSet):

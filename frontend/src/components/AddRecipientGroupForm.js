@@ -29,16 +29,17 @@ const AddRecipientGroupForm = () => {
   const validHeaders = ["firstName", "lastName", "email", "position"];
 
   const validateHeaders = (headers) => {
-    return validHeaders.every((header) => headers.includes(header));
+    return headers.includes("email") && headers.every((header) => validHeaders.includes(header));
   };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
-
+  
     const reader = new FileReader();
     reader.onload = ({ target }) => {
       const fileData = target.result;
+  
       if (file.name.endsWith(".csv")) {
         Papa.parse(fileData, {
           header: true,
@@ -47,11 +48,18 @@ const AddRecipientGroupForm = () => {
             const headers = Object.keys(results.data[0] || {});
             if (!validateHeaders(headers)) {
               alert(
-                `Ошибка! Неверный формат файла.\n\nОжидаемый формат (CSV, XLSX):\nfirstName,lastName,email,position\n\nПример строки:\nJohn,Doe,john.doe@example.com,Manager`
+                `Ошибка! Неверный формат файла.\n\nОжидаемый формат (CSV, XLSX):\nТолько email или полный набор полей: firstName, lastName, email, position.\n\nПример строки:\njohn.doe@example.com или John,Doe,john.doe@example.com,Manager`
               );
               return;
             }
-            setRecipients(results.data);
+            // Обрабатываем данные и заполняем отсутствующие поля
+            const processedRecipients = results.data.map((row) => ({
+              firstName: row.firstName || "",
+              lastName: row.lastName || "",
+              email: row.email || "",
+              position: row.position || "",
+            }));
+            setRecipients(processedRecipients);
           },
         });
       } else {
@@ -61,26 +69,34 @@ const AddRecipientGroupForm = () => {
         const headers = Object.keys(sheet[0] || {});
         if (!validateHeaders(headers)) {
           alert(
-            `Ошибка! Неверный формат файла.\n\nОжидаемый формат (CSV, XLSX):\nfirstName,lastName,email,position\n\nПример строки:\nJohn,Doe,john.doe@example.com,Manager`
+            `Ошибка! Неверный формат файла.\n\nОжидаемый формат (CSV, XLSX):\nТолько email или полный набор полей: firstName, lastName, email, position.\n\nПример строки:\njohn.doe@example.com или John,Doe,john.doe@example.com,Manager`
           );
           return;
         }
-        setRecipients(sheet);
+        // Обрабатываем данные и заполняем отсутствующие поля
+        const processedRecipients = sheet.map((row) => ({
+          firstName: row.firstName || "",
+          lastName: row.lastName || "",
+          email: row.email || "",
+          position: row.position || "",
+        }));
+        setRecipients(processedRecipients);
       }
     };
     reader.readAsBinaryString(file);
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
   
     const filteredRecipients = recipients
-      .filter(r => r.firstName && r.lastName && r.email && r.position)
+      .filter(r => r.email)
       .map(r => ({
-        first_name: r.firstName.trim(),
-        last_name: r.lastName.trim(),
+        first_name: r.firstName.trim() || "",
+        last_name: r.lastName.trim() || "",
         email: r.email.trim(),
-        position: r.position.trim(),
+        position: r.position.trim() || "",
       }));
   
     
@@ -177,7 +193,7 @@ const AddRecipientGroupForm = () => {
                       newRecipients[index].firstName = e.target.value;
                       setRecipients(newRecipients);
                     }}
-                    required
+                    
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -190,7 +206,7 @@ const AddRecipientGroupForm = () => {
                       newRecipients[index].lastName = e.target.value;
                       setRecipients(newRecipients);
                     }}
-                    required
+                    
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -217,7 +233,7 @@ const AddRecipientGroupForm = () => {
                       newRecipients[index].position = e.target.value;
                       setRecipients(newRecipients);
                     }}
-                    required
+                  
                   />
                 </Grid>
                 <Grid item xs={2} sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>

@@ -5,7 +5,7 @@ import google.generativeai as genai
 def generate_phishing_email_open_ai(subject, employee_name):
     client = OpenAI(api_key=os.getenv("OPEN_AI_API_KEY"))
     prompt = f"""
-    Generate several phishing emails in HTML format with the subject '{subject}'.
+    Generate several phishing emails in HTML format with the subject '{subject}' in russian.
     - Start the whole message with <!DOCTYPE html> and just separate them with "-----" 
     - Address the recipient by their name: {employee_name}.
     - Make it look urgent and professional. 

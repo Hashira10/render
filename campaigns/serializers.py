@@ -5,11 +5,18 @@ class SenderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sender
         fields = '__all__'
+        read_only_fields = ['user']
+
 
 class RecipientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipient
         fields = ['id', 'first_name', 'last_name', 'email', 'position']
+        extra_kwargs = {
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+            'position': {'required': False},
+        }
 
 class RecipientGroupSerializer(serializers.ModelSerializer):
     recipients = RecipientSerializer(many=True)
@@ -19,11 +26,16 @@ class RecipientGroupSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'recipients']
 
     def create(self, validated_data):
-        recipients_data = validated_data.pop('recipients')
+        recipients_data = validated_data.pop('recipients', [])
         group = RecipientGroup.objects.create(**validated_data)
 
         for recipient_data in recipients_data:
-            recipient = Recipient.objects.create(**recipient_data)
+            recipient = Recipient.objects.create(
+                email=recipient_data['email'],
+                first_name=recipient_data.get('first_name', None),
+                last_name=recipient_data.get('last_name', None),
+                position=recipient_data.get('position', None),
+            )
             group.recipients.add(recipient)
 
         return group

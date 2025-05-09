@@ -1,7 +1,9 @@
 from django.db import models
 from django.utils.timezone import now
+from django.contrib.auth.models import User
 
 class Sender(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="senders", null=True, blank=True)
     smtp_host = models.CharField(max_length=255)
     smtp_port = models.IntegerField()
     smtp_username = models.CharField(max_length=255)
@@ -18,13 +20,13 @@ class RecipientGroup(models.Model):
         return self.name
 
 class Recipient(models.Model):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100, default="unknown", blank=True, null=True)
+    last_name = models.CharField(max_length=100, default="unknown", blank=True, null=True)
     email = models.EmailField()
-    position = models.CharField(max_length=100)
+    position = models.CharField(max_length=100, default="unknown", blank=True, null=True)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.first_name or 'Unknown'} {self.last_name or 'Unknown'}"
 
 
 class Message(models.Model):
