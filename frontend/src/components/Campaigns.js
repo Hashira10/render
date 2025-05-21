@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Paper, Typography, TextField, Select, MenuItem, FormControl, InputLabel, Checkbox, FormControlLabel, Button, Grid, Snackbar, Alert, Box, CircularProgress } from "@mui/material";
 import { API_BASE_URL } from '../config';
+import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 
 const Campaigns = () => {
   const [senders, setSenders] = useState([]);
@@ -20,7 +21,13 @@ const Campaigns = () => {
   const [generating, setGenerating] = useState(false);
   const [customHost, setCustomHost] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewContent, setPreviewContent] = useState("");
 
+  const handlePreview = (htmlContent) => {
+    setPreviewContent(htmlContent);
+    setPreviewOpen(true);
+  };
 
   const getPlatformLinks = (host) => ({
     facebook: `${host}/track/{recipient_id}/{message_id}/facebook/`,
@@ -323,7 +330,20 @@ const Campaigns = () => {
                         >
                           Next &gt;
                       </Button>
+                      
                   </div>
+              </Grid>
+              
+              <Grid item xs={12}>
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <Button 
+                    variant="outlined" 
+                    onClick={() => handlePreview(emails[currentIndex])}
+                    sx={{ minWidth: "180px" }}
+                  >
+                    Preview
+                  </Button>
+                </Box>
               </Grid>
 
               <Grid item xs={12}>
@@ -361,6 +381,14 @@ const Campaigns = () => {
           {message.text}
         </Alert>
       </Snackbar>
+      
+      <Dialog open={previewOpen} onClose={() => setPreviewOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle>Email Preview</DialogTitle>
+        <DialogContent>
+          <div dangerouslySetInnerHTML={{ __html: previewContent }} />
+        </DialogContent>
+      </Dialog>
+
     </Container>
   );
 };

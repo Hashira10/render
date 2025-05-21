@@ -3,7 +3,6 @@ from django.utils.timezone import now
 from django.contrib.auth.models import User
 
 class Sender(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="senders", null=True, blank=True)
     smtp_host = models.CharField(max_length=255)
     smtp_port = models.IntegerField()
     smtp_username = models.CharField(max_length=255)

@@ -41,19 +41,8 @@ class CredentialLogViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class SenderViewSet(viewsets.ModelViewSet):
-    queryset = Sender.objects.none()  # Placeholder queryset
+    queryset = Sender.objects.all()
     serializer_class = SenderSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        logger.info(f"Запрос от пользователя: {user} (ID: {user.id})")
-        # Показываем только отправителей, добавленных текущим пользователем
-        return Sender.objects.filter(user=self.request.user)
-
-    def perform_create(self, serializer):
-        # Устанавливаем текущего пользователя как владельца записи
-        serializer.save(user=self.request.user)
 
 
 class RecipientGroupViewSet(viewsets.ModelViewSet):
