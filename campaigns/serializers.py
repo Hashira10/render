@@ -4,8 +4,7 @@ from .models import Sender, RecipientGroup, Recipient, Message, ClickLog, Creden
 class SenderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sender
-        fields = '__all__'
-        read_only_fields = ['user']
+        fields = ['id', 'smtp_host', 'smtp_port', 'smtp_username', 'smtp_password']
 
 
 class RecipientSerializer(serializers.ModelSerializer):
@@ -27,10 +26,12 @@ class RecipientGroupSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         recipients_data = validated_data.pop('recipients', [])
-        group = RecipientGroup.objects.create(**validated_data)
+        user = validated_data.pop('user', None)
+        group = RecipientGroup.objects.create(user=user, **validated_data)
 
         for recipient_data in recipients_data:
             recipient = Recipient.objects.create(
+                user=user,
                 email=recipient_data['email'],
                 first_name=recipient_data.get('first_name', None),
                 last_name=recipient_data.get('last_name', None),
@@ -40,13 +41,16 @@ class RecipientGroupSerializer(serializers.ModelSerializer):
 
         return group
 
+
+
 class MessageSerializer(serializers.ModelSerializer):
     recipient_group = RecipientGroupSerializer()
     recipients = RecipientSerializer(many=True, read_only=True)
 
     class Meta:
         model = Message
-        fields = ['id', 'sender', 'recipient_group', 'recipients', 'campaign_name', 'subject', 'body', 'link', 'sent_at', 'host']
+        fields = ['id', 'user', 'sender', 'recipient_group', 'recipients', 'campaign_name', 'subject', 'body', 'link', 'sent_at', 'host']
+        read_only_fields = ['user', 'sent_at', 'recipients']
 
     def to_representation(self, instance):
         """

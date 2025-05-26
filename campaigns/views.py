@@ -4,7 +4,6 @@ from .serializers import SenderSerializer, RecipientGroupSerializer, RecipientSe
 from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
 from django.core.mail import get_connection, EmailMessage, EmailMultiAlternatives
-from rest_framework.permissions import IsAuthenticated
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -20,7 +19,7 @@ from django.urls import reverse
 import threading
 import random, string, json, logging
 
-
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 logger = logging.getLogger(__name__)
@@ -41,13 +40,25 @@ class CredentialLogViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class SenderViewSet(viewsets.ModelViewSet):
-    queryset = Sender.objects.all()
     serializer_class = SenderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Sender.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class RecipientGroupViewSet(viewsets.ModelViewSet):
-    queryset = RecipientGroup.objects.all()
     serializer_class = RecipientGroupSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return RecipientGroup.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
     @action(detail=True, methods=['post'])
     def add_recipient(self, request, pk=None):
@@ -125,6 +136,10 @@ def send_email_async(email):
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Message.objects.filter(user=self.request.user)
 
     @action(detail=False, methods=['post'])
     def preview(self, request):
@@ -204,6 +219,7 @@ class MessageViewSet(viewsets.ModelViewSet):
             )
 
             message = Message.objects.create(
+                user=request.user,
                 sender=sender,
                 recipient_group=group,
                 campaign_name=campaign_name,
@@ -410,65 +426,33 @@ def generate_credentials():
     password = "".join(random.choices(string.ascii_letters + string.digits, k=8))
     return username, password
 
-@csrf_exempt
+@api_view(["POST"])
+@permission_classes([AllowAny])
 def signup_view(request):
-    if request.method == "OPTIONS":
-        return add_cors_headers(JsonResponse({"message": "CORS preflight success"}))
-
-    if request.method != "POST":
-        return add_cors_headers(JsonResponse({"error": "Only POST requests are allowed."}, status=405))
-
     username = "user" + "".join(random.choices("0123456789", k=6))
     password = "".join(random.choices(string.ascii_letters + string.digits, k=8))
-
     user = User.objects.create_user(username=username, password=password)
 
-    response = JsonResponse({
+    return Response({
         "message": "User created successfully",
         "username": username,
         "password": password
     }, status=201)
 
-    return add_cors_headers(response)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def check_auth_view(request):
+    return Response({"authenticated": True, "username": request.user.username})
 
-@csrf_exempt
-def login_view(request):
-    if request.method == "OPTIONS":
-        return add_cors_headers(JsonResponse({"message": "CORS preflight success"}))
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def current_user_view(request):
+    return Response({"username": request.user.username})
 
-    if request.method == "GET":
-        return add_cors_headers(JsonResponse({"message": "Login page (UI should be here)"}, status=200))
-
-    if request.method != "POST":
-        return add_cors_headers(JsonResponse({"error": "Only POST requests are allowed."}, status=405))
-
-    data = json.loads(request.body)
-    username = data.get("username")
-    password = data.get("password")
-
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
-        login(request, user)
-        print("User authenticated:", request.user.is_authenticated)
-        print("Session ID after login:", request.session.session_key)
-        return add_cors_headers(JsonResponse({"message": "Login successful"}, status=200))
-
-    return add_cors_headers(JsonResponse({"error": "Invalid credentials"}, status=401))
-
-@csrf_exempt
-def logout_view(request):
-    if request.method == "OPTIONS":
-        return add_cors_headers(JsonResponse({"message": "CORS preflight success"}))
-
-    if request.method == "POST":
-        logout(request)
-        return add_cors_headers(JsonResponse({"message": "Logout successful"}, status=200))
-
-    return add_cors_headers(JsonResponse({"error": "Only POST requests are allowed."}, status=405))
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def change_password_view(request):
-
     current_password = request.data.get('current_password')
     new_password = request.data.get('new_password')
     confirm_password = request.data.get('confirm_password')
@@ -487,9 +471,10 @@ def change_password_view(request):
     user.set_password(new_password)
     user.save()
 
-    login(request, user)
+    # При JWT не нужно логиниться заново, токен действует, пока не истечет
 
     return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+
 
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
@@ -505,11 +490,10 @@ def change_username_view(request):
     request.user.username = new_username
     request.user.save()
 
-    login(request, request.user)
-
     return Response({"message": "Username updated successfully.", "username": request.user.username}, status=200)
 
-
-@login_required
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def current_user_view(request):
-    return JsonResponse({"username": request.user.username})
+    user = request.user
+    return Response({"username": user.username})

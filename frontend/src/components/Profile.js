@@ -35,15 +35,26 @@ const Profile = () => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [message, setMessage] = useState({ text: "", severity: "info" });  // Инициализация переменной message
 
-    // Загружаем текущий username при монтировании
+
     useEffect(() => {
+        const token = localStorage.getItem("access_token"); 
+
+        if (!token) {
+            setCurrentUsername("Unknown");
+            return;
+        }
+
         axios
-            .get(`${API_BASE_URL}/current-user/`, { withCredentials: true })
+            .get(`${API_BASE_URL}/current-user/`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            })
             .then((res) => {
-                setCurrentUsername(res.data.username);
+            setCurrentUsername(res.data.username);
             })
             .catch(() => {
-                setCurrentUsername("Unknown");
+            setCurrentUsername("Unknown");
             });
     }, []);
 

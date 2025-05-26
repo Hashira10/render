@@ -23,9 +23,16 @@ const RecipientGroupList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(API_BASE_URL + '/api/recipient_groups/')
-      .then(response => setRecipientGroups(response.data))
-      .catch(error => console.error("Error fetching recipient groups:", error));
+    axios
+      .get(`${API_BASE_URL}/api/recipient_groups/`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
+      })
+      .then((response) => setRecipientGroups(response.data))
+      .catch((error) => {
+        console.error("Error fetching recipient_groups:", error);
+        setMessage({ text: "Failed to load recipient_groups.", severity: "error" });
+        setOpenSnackbar(true);
+      });
   }, []);
 
   const handleSelectGroup = (groupId) => {
@@ -34,17 +41,19 @@ const RecipientGroupList = () => {
 
   const handleDeleteGroup = (groupId) => {
     if (window.confirm("Are you sure you want to delete this group?")) {
-      axios.delete(`${API_BASE_URL}/api/recipient_groups/${groupId}/`)
-        .then(() => {
-          setRecipientGroups(prevGroups => prevGroups.filter(group => group.id !== groupId));
-          setMessage({ text: "Group deleted successfully!", severity: "success" });
-          setOpenSnackbar(true);
-        })
-        .catch(error => {
-          console.error("Error deleting recipient group:", error);
-          setMessage({ text: "Error deleting group.", severity: "error" });
-          setOpenSnackbar(true);
-        });
+      axios.delete(`${API_BASE_URL}/api/recipient_groups/${groupId}/`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` }
+      })
+      .then(() => {
+        setRecipientGroups(prevGroups => prevGroups.filter(group => group.id !== groupId));
+        setMessage({ text: "Group deleted successfully!", severity: "success" });
+        setOpenSnackbar(true);
+      })
+      .catch(error => {
+        console.error("Error deleting recipient group:", error);
+        setMessage({ text: "Error deleting group.", severity: "error" });
+        setOpenSnackbar(true);
+      });
     }
   };
 

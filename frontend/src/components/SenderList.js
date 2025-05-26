@@ -25,7 +25,7 @@ const SenderList = () => {
   useEffect(() => {
     axios
       .get(`${API_BASE_URL}/api/senders/`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
       })
       .then((response) => setSenders(response.data))
       .catch((error) => {

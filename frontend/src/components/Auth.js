@@ -26,8 +26,21 @@ const Auth = ({ setIsAuthenticated }) => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${API_BASE_URL}/login/`, { username, password }, { withCredentials: true });
+            const response = await axios.post(`${API_BASE_URL}/token/`, {
+                username,
+                password
+            }, { withCredentials: true });
+
             if (response.status === 200) {
+                const { access, refresh } = response.data;
+
+                // Сохраняем токены
+                localStorage.setItem("access_token", access);
+                localStorage.setItem("refresh_token", refresh);
+
+                // Устанавливаем авторизацию по умолчанию для всех запросов
+                axios.defaults.headers.common["Authorization"] = `Bearer ${access}`;
+
                 setIsAuthenticated(true);
                 navigate("/dashboard");
             }

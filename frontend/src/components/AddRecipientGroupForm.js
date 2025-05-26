@@ -89,7 +89,7 @@ const AddRecipientGroupForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const filteredRecipients = recipients
       .filter(r => r.email)
       .map(r => ({
@@ -98,8 +98,7 @@ const AddRecipientGroupForm = () => {
         email: r.email.trim(),
         position: r.position.trim() || "",
       }));
-  
-    
+
     if (!groupName.trim()) {
       setMessage({ text: "Введите название группы", severity: "error" });
       setOpenSnackbar(true);
@@ -110,17 +109,27 @@ const AddRecipientGroupForm = () => {
       setOpenSnackbar(true);
       return;
     }
-  
+
     const groupData = {
-      name: groupName.trim(), 
+      name: groupName.trim(),
       recipients: filteredRecipients,
     };
-  
+
     try {
+      const accessToken = localStorage.getItem("access_token"); // или откуда вы храните токен
+      if (!accessToken) {
+        setMessage({ text: "Токен доступа отсутствует. Пожалуйста, войдите в систему.", severity: "error" });
+        setOpenSnackbar(true);
+        return;
+      }
+
       const response = await axios.post(`${API_BASE_URL}/api/recipient_groups/`, groupData, {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,  // <-- добавляем токен сюда
+        },
       });
-  
+
       if (response.status === 201 || response.status === 200) {
         setMessage({ text: "Группа получателей успешно добавлена!", severity: "success" });
         setGroupName("");
@@ -131,9 +140,8 @@ const AddRecipientGroupForm = () => {
     } catch (error) {
       console.error("Ошибка запроса:", error.response?.data || error.message);
       setMessage({ text: `Ошибка: ${error.response?.data?.message || "Не удалось добавить группу"}`, severity: "error" });
+      setOpenSnackbar(true);
     }
-  
-    setOpenSnackbar(true);
   };
 
   return (

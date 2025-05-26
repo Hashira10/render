@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Paper, Typography, TextField, Select, MenuItem, FormControl, InputLabel, Checkbox, FormControlLabel, Button, Grid, Snackbar, Alert, Box, CircularProgress } from "@mui/material";
 import { API_BASE_URL } from '../config';
 import { Dialog, DialogContent, DialogTitle } from '@mui/material';
-
+import axios from "axios";
 const Campaigns = () => {
   const [senders, setSenders] = useState([]);
   const [recipientGroups, setRecipientGroups] = useState([]);
@@ -49,17 +49,21 @@ const Campaigns = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const token = localStorage.getItem("access_token");
+
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+
         const [sendersRes, groupsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/senders/`),
-          fetch(`${API_BASE_URL}/api/recipient_groups/`)
+          axios.get(`${API_BASE_URL}/api/senders/`, { headers }),
+          axios.get(`${API_BASE_URL}/api/recipient_groups/`, { headers }),
         ]);
 
-        const sendersData = await sendersRes.json();
-        const groupsData = await groupsRes.json();
-
-        setSenders(sendersData);
-        setRecipientGroups(groupsData);
+        setSenders(sendersRes.data);
+        setRecipientGroups(groupsRes.data);
       } catch (error) {
+        console.error("Error fetching data:", error);
         setMessage({ text: "Error fetching data!", severity: "error" });
         setOpenSnackbar(true);
       } finally {
@@ -79,47 +83,58 @@ const Campaigns = () => {
 
     setLoading(true);
     try {
-        const previewResponse = await fetch(`${API_BASE_URL}/api/messages/preview/`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              sender: selectedSender,
-              recipient_group: selectedGroup,
-              campaign_name: campaignName,
-              subject,
-              body,
-              platform,
-              host: customHost || API_BASE_URL
-            }),
+      const accessToken = localStorage.getItem("access_token");
+      if (!accessToken) {
+        setMessage({ text: "Токен доступа отсутствует. Пожалуйста, войдите в систему.", severity: "error" });
+        setOpenSnackbar(true);
+        setLoading(false);
+        return;
+      }
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      const previewResponse = await fetch(`${API_BASE_URL}/api/messages/preview/`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          sender: selectedSender,
+          recipient_group: selectedGroup,
+          campaign_name: campaignName,
+          subject,
+          body,
+          platform,
+          host: customHost || API_BASE_URL,
+        }),
       });
+
       const previewData = await previewResponse.json();
       if (!previewResponse.ok) {
         throw new Error(previewData.detail || "Error getting message preview");
       }
 
       const response = await fetch(`${API_BASE_URL}/generate/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            subject,
-            employee_name: selectedSender,
-            model: selectedModel || "openai"
-          }),
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          subject,
+          employee_name: selectedSender,
+          model: selectedModel || "openai"
+        }),
       });
-
 
       const data = await response.json();
 
       if (response.ok) {
         const cleanedBody = data.email
-          .replace(/^(?:\*\*Subject:\*\* .*|Subject: .*)\n?/gm, '') // Remove any Subject lines
-          .replace(/^\s*```(?:html)?\s*/gm, '') // Remove opening ``` or ```html with optional spaces
-          .replace(/\s*```$/gm, '') // Remove closing ``` with optional spaces
+          .replace(/^(?:\*\*Subject:\*\* .*|Subject: .*)\n?/gm, '')
+          .replace(/^\s*```(?:html)?\s*/gm, '')
+          .replace(/\s*```$/gm, '')
           .trim();
         setBody(cleanedBody);
         setMessage({ text: "Email generated successfully!", severity: "success" });
-
-        console.log(cleanedBody)
       } else {
         setMessage({ text: data.error || "Failed to generate email.", severity: "error" });
       }
@@ -130,6 +145,7 @@ const Campaigns = () => {
       setOpenSnackbar(true);
     }
   };
+
 
   const emails = body.split(/-----|\--/);
 
@@ -149,7 +165,7 @@ const Campaigns = () => {
   
   const handleSendMessage = async (e) => {
     e.preventDefault();
-  
+
     if (!campaignName || !selectedSender || !selectedGroup || !subject || !body) {
       setMessage({ text: "All fields are required!", severity: "warning" });
       setOpenSnackbar(true);
@@ -157,14 +173,25 @@ const Campaigns = () => {
     }
 
     const selectedEmail = emails[currentIndex];
-  
     setSending(true);
-  
+
     try {
+      const accessToken = localStorage.getItem("access_token");
+      if (!accessToken) {
+        setMessage({ text: "Токен доступа отсутствует. Пожалуйста, войдите в систему.", severity: "error" });
+        setOpenSnackbar(true);
+        setSending(false);
+        return;
+      }
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      };
 
       const finalResponse = await fetch(`${API_BASE_URL}/api/messages/send_message/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           sender: selectedSender,
           recipient_group: selectedGroup,
@@ -175,12 +202,12 @@ const Campaigns = () => {
           host: customHost || API_BASE_URL,
         }),
       });
-  
+
       const finalData = await finalResponse.json();
       if (!finalResponse.ok) {
         throw new Error(finalData.detail || "Error sending message");
       }
-  
+
       setMessage({ text: "Message sent successfully!", severity: "success" });
       setCampaignName("");
       setSubject("");
@@ -193,6 +220,7 @@ const Campaigns = () => {
       setOpenSnackbar(true);
     }
   };
+
 
 
   return (

@@ -3,6 +3,7 @@ from django.utils.timezone import now
 from django.contrib.auth.models import User
 
 class Sender(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='senders')
     smtp_host = models.CharField(max_length=255)
     smtp_port = models.IntegerField()
     smtp_username = models.CharField(max_length=255)
@@ -14,11 +15,13 @@ class Sender(models.Model):
 class RecipientGroup(models.Model):
     name = models.CharField(max_length=255)
     recipients = models.ManyToManyField('Recipient')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipient_groups')
 
     def __str__(self):
         return self.name
 
 class Recipient(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipients')
     first_name = models.CharField(max_length=100, default="unknown", blank=True, null=True)
     last_name = models.CharField(max_length=100, default="unknown", blank=True, null=True)
     email = models.EmailField()
@@ -29,6 +32,7 @@ class Recipient(models.Model):
 
 
 class Message(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(Sender, on_delete=models.CASCADE)
     recipient_group = models.ForeignKey(RecipientGroup, on_delete=models.CASCADE)
     recipients = models.ManyToManyField(Recipient, blank=True) 
@@ -45,6 +49,7 @@ class Message(models.Model):
 
 
 class ClickLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='click_logs')
     recipient = models.ForeignKey("Recipient", on_delete=models.CASCADE, null=True, blank=True)
     message = models.ForeignKey("Message", on_delete=models.CASCADE, null=True, blank=True)
     ip_address = models.GenericIPAddressField()
@@ -58,6 +63,7 @@ class ClickLog(models.Model):
 
 
 class CredentialLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='credential_logs')
     recipient = models.ForeignKey("Recipient", on_delete=models.CASCADE, null=True, blank=True)
     message = models.ForeignKey("Message", on_delete=models.CASCADE, null=True, blank=True)
     email = models.EmailField()

@@ -1,10 +1,12 @@
 from django.urls import path, include, re_path
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.routers import DefaultRouter
 from .views import (
     SenderViewSet, RecipientGroupViewSet, RecipientViewSet, MessageViewSet,
     ClickLogViewSet, CredentialLogViewSet, track_click, capture_credentials,
     login_template_view, send_test_email, generate_email_view,
-    signup_view, login_view, logout_view, change_password_view, change_username_view, current_user_view,
+    signup_view, change_password_view, change_username_view, current_user_view,
+    check_auth_view,
     # change_password_view  # ✅ Add authentication views
 )
 from rest_framework import permissions
@@ -25,8 +27,8 @@ schema_view = get_schema_view(
 )
 
 router = DefaultRouter()
-router.register(r'senders', SenderViewSet)
-router.register(r'recipient_groups', RecipientGroupViewSet)
+router.register(r'senders', SenderViewSet, basename='sender')
+router.register(r'recipient_groups', RecipientGroupViewSet, basename='recipient_groups')
 router.register(r'recipients', RecipientViewSet)
 router.register(r'messages', MessageViewSet, basename="messages")
 router.register(r'click_logs', ClickLogViewSet)
@@ -44,11 +46,12 @@ urlpatterns = [
     path('generate/', generate_email_view, name='generate_email'),
 
     path("signup/", signup_view, name="signup"),
-    path("login/", login_view, name="login"),
-    path("logout/", logout_view, name="logout"),
     path("change-password/", change_password_view, name="change-password"),
     path('change-username/', change_username_view, name='change-username'),
-    path('current-user/', current_user_view),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('check-auth/', check_auth_view, name='check_auth'),
+    path('current-user/', current_user_view, name='current_user'),
 
 ]
 
