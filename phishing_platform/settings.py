@@ -15,6 +15,7 @@ from decouple import config
 import os
 from dotenv import load_dotenv
 from corsheaders.defaults import default_headers
+from datetime import timedelta
 
 load_dotenv()
 
@@ -71,7 +72,7 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False #пока локально, если https включить True
 
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = False
@@ -80,7 +81,8 @@ SESSION_COOKIE_HTTPONLY = True
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 7
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 365  
+
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_SAVE_EVERY_REQUEST = True
 
@@ -201,3 +203,11 @@ REST_FRAMEWORK = {
 }
 
 ALLOWED_HOSTS = ['127.0.0.1','localhost','172.26.208.1','192.168.56.1','10.102.69.3', '192.168.177.145', '10.212.2.185']
+
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),   
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),      
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+}

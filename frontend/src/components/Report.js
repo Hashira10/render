@@ -34,21 +34,28 @@ const Report = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const token = localStorage.getItem("access_token");
+        const headers = {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        };
+
         const [messageResponse, clickResponse, credentialResponse] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/messages/`),  
-          fetch(`${API_BASE_URL}/api/click_logs/`),
-          fetch(`${API_BASE_URL}/api/credential_logs/`)
+          fetch(`${API_BASE_URL}/api/messages/`, { headers }),
+          fetch(`${API_BASE_URL}/api/click_logs/`, { headers }),
+          fetch(`${API_BASE_URL}/api/credential_logs/`, { headers }),
         ]);
-  
+
         if (!messageResponse.ok || !clickResponse.ok || !credentialResponse.ok) {
           throw new Error("Failed to fetch data");
         }
-  
+
         const [messageData, clickData, credentialData] = await Promise.all([
           messageResponse.json(),
           clickResponse.json(),
           credentialResponse.json()
         ]);
+
   
         setMessages(messageData);
         setClickLogs(clickData);

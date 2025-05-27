@@ -21,7 +21,7 @@ const CampaignReport = ({ groupedLogs }) => {
         <Typography variant="h5" align="center" sx={{ marginTop: 4, color: "red" }}>
           Campaign "{campaignName}" not found
         </Typography>
-        <Button onClick={() => navigate("/report")} variant="contained" sx={{ marginTop: 2 }}>
+        <Button onClick={() => navigate("/dashboard/report")} variant="contained" sx={{ marginTop: 2 }}>
           Back to Report
         </Button>
       </Container>

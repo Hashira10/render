@@ -42,74 +42,76 @@ function App() {
     }, []);
 
     useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const [messageResponse, clickResponse, credentialResponse] = await Promise.all([
-              fetch(`${API_BASE_URL}/api/messages/`),
-              fetch(`${API_BASE_URL}/api/click_logs/`),
-              fetch(`${API_BASE_URL}/api/credential_logs/`)
-            ]);
-      
-            if (!messageResponse.ok || !clickResponse.ok || !credentialResponse.ok) {
-              throw new Error("Failed to fetch data");
+      const fetchData = async () => {
+        try {
+          const token = localStorage.getItem("access_token");
+          if (!token) throw new Error("No access token found");
+
+          // Запросы с axios и заголовком Authorization
+          const [messageResponse, clickResponse, credentialResponse] = await Promise.all([
+            axios.get(`${API_BASE_URL}/api/messages/`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get(`${API_BASE_URL}/api/click_logs/`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get(`${API_BASE_URL}/api/credential_logs/`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          ]);
+
+          const messageData = messageResponse.data;
+          const clickData = clickResponse.data;
+          const credentialData = credentialResponse.data;
+
+          const groupedData = {};
+
+          messageData.forEach((message) => {
+            const campaign = message.campaign_name;
+            if (!groupedData[campaign]) {
+              groupedData[campaign] = {
+                name: campaign,
+                totalRecipients: 0,
+                uniqueClickUsers: new Set(),
+                uniqueCredentialUsers: new Set(),
+              };
             }
-      
-            const [messageData, clickData, credentialData] = await Promise.all([
-              messageResponse.json(),
-              clickResponse.json(),
-              credentialResponse.json()
-            ]);
-      
-            const groupedData = {};
-      
-            messageData.forEach((message) => {
+            const recipients = message.recipients || [];
+            groupedData[campaign].totalRecipients += recipients.length;
+          });
+
+          clickData.forEach((log) => {
+            const message = messageData.find((msg) => msg.id === log.message);
+            if (message) {
               const campaign = message.campaign_name;
-              if (!groupedData[campaign]) {
-                groupedData[campaign] = {
-                  name: campaign,
-                  totalRecipients: 0,
-                  uniqueClickUsers: new Set(),
-                  uniqueCredentialUsers: new Set()
-                };
-              }
-              const recipients = message.recipients || [];
-              groupedData[campaign].totalRecipients += recipients.length;
-            });
-      
-            // Добавляем данные о кликах
-            clickData.forEach((log) => {
-              const message = messageData.find(msg => msg.id === log.message);
-              if (message) {
-                const campaign = message.campaign_name;
-                groupedData[campaign]?.uniqueClickUsers.add(log.recipient?.id);
-              }
-            });
-      
-            // Добавляем данные о вводе учетных данных
-            credentialData.forEach((log) => {
-              const message = messageData.find(msg => msg.id === log.message);
-              if (message) {
-                const campaign = message.campaign_name;
-                groupedData[campaign]?.uniqueCredentialUsers.add(log.recipient?.id);
-              }
-            });
-            
-            // Преобразуем `Set` в количество уникальных пользователей
-            Object.keys(groupedData).forEach((campaign) => {
-              groupedData[campaign].uniqueClickUsers = groupedData[campaign].uniqueClickUsers.size;
-              groupedData[campaign].uniqueCredentialUsers = groupedData[campaign].uniqueCredentialUsers.size;
-            });
-      
-            setGroupedLogs(groupedData);
-          } catch (err) {
-            setError(err.message);
-          } finally {
-            setLoading(false);
-          }
-        };
-      
-        fetchData();
-      }, []);
+              groupedData[campaign]?.uniqueClickUsers.add(log.recipient?.id);
+            }
+          });
+
+          credentialData.forEach((log) => {
+            const message = messageData.find((msg) => msg.id === log.message);
+            if (message) {
+              const campaign = message.campaign_name;
+              groupedData[campaign]?.uniqueCredentialUsers.add(log.recipient?.id);
+            }
+          });
+
+          Object.keys(groupedData).forEach((campaign) => {
+            groupedData[campaign].uniqueClickUsers = groupedData[campaign].uniqueClickUsers.size;
+            groupedData[campaign].uniqueCredentialUsers = groupedData[campaign].uniqueCredentialUsers.size;
+          });
+
+          setGroupedLogs(groupedData);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
+    }, []);
+
       
 
     return (
@@ -131,7 +133,17 @@ function App() {
                     <Route path="recipient-groups/:groupId" element={<RecipientList />} />
                     <Route path="edit-recipient/:recipientId" element={<EditRecipientForm />} />
                     <Route path="send-message" element={<Campaigns />} />
-                    <Route path="report" element={<Report />} />
+                    <Route
+                      path="report"
+                      element={
+                        <Report
+                          groupedLogs={groupedLogs}
+                          loading={loading}
+                          error={error}
+                        />
+                      }
+                    />
+
                     <Route path="/dashboard/campaign/:campaignName" element={<CampaignReport groupedLogs={groupedLogs} />} />
                     <Route path="/dashboard/profile" element={<Profile />} />
 

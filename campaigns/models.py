@@ -49,7 +49,7 @@ class Message(models.Model):
 
 
 class ClickLog(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='click_logs')
+    
     recipient = models.ForeignKey("Recipient", on_delete=models.CASCADE, null=True, blank=True)
     message = models.ForeignKey("Message", on_delete=models.CASCADE, null=True, blank=True)
     ip_address = models.GenericIPAddressField()
@@ -63,7 +63,7 @@ class ClickLog(models.Model):
 
 
 class CredentialLog(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='credential_logs')
+    
     recipient = models.ForeignKey("Recipient", on_delete=models.CASCADE, null=True, blank=True)
     message = models.ForeignKey("Message", on_delete=models.CASCADE, null=True, blank=True)
     email = models.EmailField()
