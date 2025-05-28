@@ -203,8 +203,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost','172.26.208.1','192.168.56.1','10.102.69.3', '192.168.177.145', '10.212.2.185']
-
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),   
