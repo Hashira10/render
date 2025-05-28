@@ -19,9 +19,6 @@ from datetime import timedelta
 
 load_dotenv()
 
-OPEN_AI_API_KEY = os.getenv("OPEN_AI_API_KEY")
-
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
