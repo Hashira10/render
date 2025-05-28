@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link, useNavigate, useLocation, Outlet } from "react-router-dom";
 import axios from "axios";
-
+import { API_BASE_URL } from '../config';
 
 const MainLayout = ({ setIsAuthenticated }) => {
     const navigate = useNavigate();
@@ -13,7 +13,7 @@ const MainLayout = ({ setIsAuthenticated }) => {
 
     const handleLogout = async () => {
         try {
-            await axios.post("http://127.0.0.1:8000/logout/", {}, { withCredentials: true });
+            await axios.post("${API_BASE_URL}/logout/", {}, { withCredentials: true });
             setIsAuthenticated(false);
             navigate("/auth");
         } catch (error) {
