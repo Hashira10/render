@@ -36,6 +36,7 @@ const AddSenderForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const senderData = {
       smtp_host: smtpHost,
       smtp_port: smtpPort,
@@ -44,16 +45,34 @@ const AddSenderForm = () => {
     };
 
     try {
-      await axios.post(`${API_BASE_URL}/api/senders/`, senderData);
-      setMessage({ text: "Sender added successfully!", severity: "success" });
-      setSmtpHost("");
-      setSmtpPort("");
-      setSmtpUsername("");
-      setSmtpPassword("");
+      const accessToken = localStorage.getItem("access_token");
+      if (!accessToken) {
+        setMessage({ text: "Токен доступа отсутствует. Пожалуйста, войдите в систему.", severity: "error" });
+        setOpenSnackbar(true);
+        return;
+      }
+
+      const response = await axios.post(`${API_BASE_URL}/api/senders/`, senderData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`, // добавляем токен
+        },
+      });
+
+      if (response.status === 201 || response.status === 200) {
+        setMessage({ text: "Отправитель успешно добавлен!", severity: "success" });
+        setSmtpHost("");
+        setSmtpPort("");
+        setSmtpUsername("");
+        setSmtpPassword("");
+      } else {
+        throw new Error("Ошибка при добавлении отправителя");
+      }
     } catch (error) {
-      console.error("Error adding sender:", error);
-      setMessage({ text: "Failed to add sender", severity: "error" });
+      console.error("Ошибка при добавлении отправителя:", error.response?.data || error.message);
+      setMessage({ text: `Ошибка: ${error.response?.data?.message || "Не удалось добавить отправителя"}`, severity: "error" });
     }
+
     setOpenSnackbar(true);
   };
 
