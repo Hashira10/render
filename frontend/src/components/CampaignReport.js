@@ -9,11 +9,7 @@ import {
   PieChart, Pie, Cell
 } from "recharts";
 
-const CampaignReport = ({
-  groupedLogs = {},
-  clickLogs = [],
-  credentialLogs = []
-}) => {
+const CampaignReport = ({ groupedLogs }) => {
   const { campaignName } = useParams();
   const navigate = useNavigate();
 
@@ -32,20 +28,6 @@ const CampaignReport = ({
     );
   }
 
-  // 🔍 Найдем все сообщения этой кампании
-  const campaignMessageIds = Object.values(groupedLogs)
-    .find(group => group.name === campaignName)?.id;
-
-  // ✅ Фильтрация по ID сообщения
-  const filteredClickLogs = clickLogs.filter(log => {
-    const message = log.message; // ID сообщения
-    return message === campaignMessageIds;
-  });
-
-  const filteredCredentialLogs = credentialLogs.filter(log => {
-    const message = log.message; // ID сообщения
-    return message === campaignMessageIds;
-  });
 
   return (
     <Container maxWidth="lg" sx={{ marginBottom: 4 }}>
@@ -215,101 +197,6 @@ const CampaignReport = ({
             </TableBody>
           </Table>
         </TableContainer>
-
-        <Typography
-                  variant="h6"
-                  align="center"
-                  sx={{ marginTop: 4, color: "#25344F", fontSize: "1rem" }}
-                >
-                  Users Who Clicked Links
-                </Typography>
-                <Paper sx={{ padding: 2, marginBottom: 2 }}>
-                  {filteredClickLogs.length === 0 ? (
-                    <Typography variant="body2" color="text.secondary">
-                      No users clicked on links.
-                    </Typography>
-                  ) : (
-                    filteredClickLogs.map((log, idx) => (
-                      <Typography key={idx} variant="body2">
-                        {log.recipient?.email || "Unknown email"} — clicked at {new Date(log.timestamp).toLocaleString()}
-                      </Typography>
-                    ))
-                  )}
-                </Paper>
-        
-                <Typography
-                  variant="h6"
-                  align="center"
-                  sx={{ marginTop: 4, color: "#25344F", fontSize: "1rem" }}
-                >
-                  Users Who Submitted Credentials
-                </Typography>
-                <Paper sx={{ padding: 2, marginBottom: 2 }}>
-                  {filteredCredentialLogs.length === 0 ? (
-                    <Typography variant="body2" color="text.secondary">
-                      No users submitted credentials.
-                    </Typography>
-                  ) : (
-                    filteredCredentialLogs.map((log, idx) => (
-                      <div key={idx} style={{ marginBottom: "12px" }}>
-                        <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                          {log.recipient?.email || "Unknown email"} — submitted at {new Date(log.timestamp).toLocaleString()}
-                        </Typography>
-                        {log.data && (
-                          <ul style={{ paddingLeft: "20px" }}>
-                            {Object.entries(log.data).map(([key, value], i) => (
-                              <li key={i}>
-                                <Typography variant="body2">
-                                  <strong>{key}:</strong> {value}
-                                </Typography>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </Paper>
-        
-        
-                <Typography
-                  variant="h6"
-                  align="center"
-                  sx={{ marginTop: 4, color: "#25344F", fontSize: "1rem" }}
-                >
-                  Submitted Credential Data
-                </Typography>
-        
-                <Paper sx={{ padding: 2, marginBottom: 2 }}>
-                  {credentialLogs.length === 0 ? (
-                    <Typography variant="body2" color="text.secondary">
-                      No credential submissions recorded.
-                    </Typography>
-                  ) : (
-                    credentialLogs.map((log, idx) => (
-                      <div key={idx} style={{ marginBottom: "20px", paddingBottom: "10px", borderBottom: "1px solid #ccc" }}>
-                        <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                          {log.recipient?.email || log.email || "Unknown email"} — submitted at {new Date(log.timestamp).toLocaleString()}
-                        </Typography>
-        
-                        <ul style={{ marginTop: "6px", paddingLeft: "20px" }}>
-                          <li>
-                            <Typography variant="body2">
-                              <strong>Email:</strong> {log.email}
-                            </Typography>
-                          </li>
-                          {log.password && (
-                            <li>
-                              <Typography variant="body2">
-                                <strong>Password:</strong> {log.password}
-                              </Typography>
-                            </li>
-                          )}
-                        </ul>
-                      </div>
-                    ))
-                  )}
-                </Paper>
       </Paper>
     </Container>
 

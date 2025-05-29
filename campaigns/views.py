@@ -236,8 +236,8 @@ class MessageViewSet(viewsets.ModelViewSet):
 
                 email_body = body.replace("[Suspicious Link]", tracking_link)
                 
-                recipient_name = f"{recipient.first_name} {recipient.last_name}"
-                email_body = email_body.replace("[Recipient's Name]", recipient_name)
+                # recipient_name = f"{recipient.first_name} {recipient.last_name}"
+                # email_body = email_body.replace("[Recipient's Name]", recipient_name)
 
 
                 email = EmailMultiAlternatives(
