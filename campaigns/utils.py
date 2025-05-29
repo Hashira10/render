@@ -18,6 +18,12 @@ def generate_phishing_email_open_ai(subject, employee_name):
     - Do not include a signature with any entity name, phone number, or email.
     - The closing of the email should be generic, like Best regards, appropriate department name without any organization name.
     - Avoid repeating common phrases.
+    - Each email must include CSS styles.
+    - Make sure the styling is simple and professional (e.g., font-family, colors, spacing).
+    - Make the emails highly **triggering and emotionally compelling**:
+        - Induce a sense of urgency, fear, pressure, or alarm.
+        - Simulate a professional tone from trusted sources (e.g., IT department, HR, security team).
+        - Mention account suspension, unusual activity, or urgent policy updates.
     """
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -44,6 +50,12 @@ def generate_phishing_email_gemini(subject, employee_name):
     - Make the messages look authentic but slightly questionable upon closer inspection.
     - Avoid adding organization names or real contact details in the signature.
     - Close the emails with generic endings such as "Regards" or "Support Team".
+    - Each email must include CSS styles.
+    - Make sure the styling is simple and professional (e.g., font-family, colors, spacing).
+    - Make the emails highly **triggering and emotionally compelling**:
+        - Induce a sense of urgency, fear, pressure, or alarm.
+        - Simulate a professional tone from trusted sources (e.g., IT department, HR, security team).
+        - Mention account suspension, unusual activity, or urgent policy updates.
     """
     model = genai.GenerativeModel("gemini-2.0-flash")
     response = model.generate_content(prompt)
