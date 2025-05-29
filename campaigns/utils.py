@@ -23,6 +23,7 @@ def generate_phishing_email_open_ai(subject, employee_name):
         - Induce a sense of urgency, fear, pressure, or alarm.
         - Simulate a professional tone from trusted sources (e.g., IT department, HR, security team).
         - Mention account suspension, unusual activity, or urgent policy updates.
+    - Use HTML <a href="[Suspicious Link]">link text</a> to embed the link under meaningful anchor text.
     """
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -54,7 +55,10 @@ def generate_phishing_email_gemini(subject, employee_name):
         - Induce a sense of urgency, fear, pressure, or alarm.
         - Simulate a professional tone from trusted sources (e.g., IT department, HR, security team).
         - Mention account suspension, unusual activity, or urgent policy updates.
+    - Use HTML <a href="[Suspicious Link]">link text</a> to embed the link under meaningful anchor text.
+
     """
+
     model = genai.GenerativeModel("gemini-2.0-flash")
     response = model.generate_content(prompt)
     return response.text.strip()
