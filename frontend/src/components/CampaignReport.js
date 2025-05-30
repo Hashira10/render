@@ -197,6 +197,26 @@ const CampaignReport = ({ groupedLogs }) => {
             </TableBody>
           </Table>
         </TableContainer>
+
+        <Typography variant="h6" sx={{ marginTop: 3, color: "#253745", fontSize: "1rem" }}>
+          Users who Clicked ({(campaignData.clickUserEmails?.length ?? 0)})
+        </Typography>
+        <ul>
+          {(campaignData.clickUserEmails ?? []).map((email) => (
+            <li key={email} style={{ fontSize: "0.875rem", color: "#253745" }}>{email}</li>
+          ))}
+        </ul>
+
+        <Typography variant="h6" sx={{ marginTop: 3, color: "#253745", fontSize: "1rem" }}>
+          Users who Submitted Credentials ({(campaignData.credentialUserEmails?.length ?? 0)})
+        </Typography>
+        <ul>
+          {(campaignData.credentialUserEmails ?? []).map((email) => (
+            <li key={email} style={{ fontSize: "0.875rem", color: "#253745" }}>{email}</li>
+          ))}
+        </ul>
+
+
       </Paper>
     </Container>
 

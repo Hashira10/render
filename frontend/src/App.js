@@ -74,6 +74,8 @@ function App() {
                 totalRecipients: 0,
                 uniqueClickUsers: new Set(),
                 uniqueCredentialUsers: new Set(),
+                clickUserEmails: new Set(),
+                credentialUserEmails: new Set(),
               };
             }
             const recipients = message.recipients || [];
@@ -84,7 +86,10 @@ function App() {
             const message = messageData.find((msg) => msg.id === log.message);
             if (message) {
               const campaign = message.campaign_name;
+              
+              const recipientEmail = log.recipient?.email;
               groupedData[campaign]?.uniqueClickUsers.add(log.recipient?.id);
+              if (recipientEmail) groupedData[campaign]?.clickUserEmails.add(recipientEmail);
             }
           });
 
@@ -92,13 +97,19 @@ function App() {
             const message = messageData.find((msg) => msg.id === log.message);
             if (message) {
               const campaign = message.campaign_name;
+              const recipientEmail = log.recipient?.email;
               groupedData[campaign]?.uniqueCredentialUsers.add(log.recipient?.id);
+              if (recipientEmail) groupedData[campaign]?.credentialUserEmails.add(recipientEmail);
             }
           });
 
           Object.keys(groupedData).forEach((campaign) => {
             groupedData[campaign].uniqueClickUsers = groupedData[campaign].uniqueClickUsers.size;
             groupedData[campaign].uniqueCredentialUsers = groupedData[campaign].uniqueCredentialUsers.size;
+
+            groupedData[campaign].clickUserEmails = Array.from(groupedData[campaign].clickUserEmails);
+            groupedData[campaign].credentialUserEmails = Array.from(groupedData[campaign].credentialUserEmails);
+
           });
 
           setGroupedLogs(groupedData);

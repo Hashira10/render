@@ -27,24 +27,32 @@ const RecipientList = () => {
   const [newRecipient, setNewRecipient] = useState({ first_name: "", last_name: "", email: "", position: "" });
   const [message, setMessage] = useState({ text: "", severity: "info" });
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const token = localStorage.getItem("access_token");
 
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/api/recipient_groups/${groupId}/`)
+    axios.get(`${API_BASE_URL}/api/recipient_groups/${groupId}/`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
       .then(response => setRecipients(response.data.recipients))
       .catch(error => console.error("Error fetching recipients:", error));
   }, [groupId]);
 
   const handleCreateRecipient = () => {
-    if (!newRecipient.first_name || !newRecipient.last_name || !newRecipient.email || !newRecipient.position) {
-      setMessage({ text: "Please fill in all fields.", severity: "warning" });
+    if (!newRecipient.email) {
+      setMessage({ text: "Please fill in email field.", severity: "warning" });
       setOpenSnackbar(true);
       return;
     }
 
-    axios.post(`${API_BASE_URL}/api/recipients/`, newRecipient)
+    axios.post(`${API_BASE_URL}/api/recipients/`, newRecipient, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
       .then(response => {
         const createdRecipient = response.data;
-        return axios.post(`${API_BASE_URL}/api/recipient_groups/${groupId}/add_recipient/`, { recipient_id: createdRecipient.id });
+        return axios.post(`${API_BASE_URL}/api/recipient_groups/${groupId}/add_recipient/`, 
+          { recipient_id: createdRecipient.id }, 
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
       })
       .then(() => {
         setRecipients(prevRecipients => [...prevRecipients, newRecipient]);
@@ -60,18 +68,21 @@ const RecipientList = () => {
   };
 
   const handleDeleteRecipient = (recipientId) => {
-    axios.delete(`${API_BASE_URL}/api/recipients/${recipientId}/`)
-      .then(() => {
-        setRecipients(recipients.filter(recipient => recipient.id !== recipientId));
-        setMessage({ text: "Recipient deleted successfully!", severity: "success" });
-        setOpenSnackbar(true);
-      })
-      .catch(error => {
-        console.error("Error deleting recipient:", error);
-        setMessage({ text: "Error deleting recipient.", severity: "error" });
-        setOpenSnackbar(true);
-      });
+    axios.delete(`${API_BASE_URL}/api/recipients/${recipientId}/`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(() => {
+      setRecipients(recipients.filter(recipient => recipient.id !== recipientId));
+      setMessage({ text: "Recipient deleted successfully!", severity: "success" });
+      setOpenSnackbar(true);
+    })
+    .catch(error => {
+      console.error("Error deleting recipient:", error);
+      setMessage({ text: "Error deleting recipient.", severity: "error" });
+      setOpenSnackbar(true);
+    });
   };
+
 
   return (
     <Container maxWidth="md">
