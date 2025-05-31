@@ -24,6 +24,8 @@ def generate_phishing_email_open_ai(subject, employee_name):
         - Simulate a professional tone from trusted sources (e.g., IT department, HR, security team).
         - Mention account suspension, unusual activity, or urgent policy updates.
     - Use HTML <a href="[Suspicious Link]">link text</a> to embed the link under meaningful anchor text.
+    - Remove the word "company" from messages as it could be a university or other organization.
+    - Write in general, do not mention suspicious activity of a particular account.
     """
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -56,7 +58,8 @@ def generate_phishing_email_gemini(subject, employee_name):
         - Simulate a professional tone from trusted sources (e.g., IT department, HR, security team).
         - Mention account suspension, unusual activity, or urgent policy updates.
     - Use HTML <a href="[Suspicious Link]">link text</a> to embed the link under meaningful anchor text.
-
+    - Remove the word "company" from messages as it could be a university or other organization.
+    - Write in general, do not mention suspicious activity of a particular account.
     """
 
     model = genai.GenerativeModel("gemini-2.0-flash")
