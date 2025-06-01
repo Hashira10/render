@@ -26,16 +26,30 @@ const EditRecipientForm = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/api/recipients/${recipientId}/`)
-      .then((response) => {
+    const fetchRecipientData = async () => {
+      try {
+        const accessToken = localStorage.getItem("access_token");
+        if (!accessToken) {
+          setMessage({ text: "Токен доступа отсутствует. Пожалуйста, войдите в систему.", severity: "error" });
+          setOpenSnackbar(true);
+          return;
+        }
+
+        const response = await axios.get(`${API_BASE_URL}/api/recipients/${recipientId}/`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
         setRecipientData(response.data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching recipient data:", error);
-        setMessage({ text: "Error fetching recipient data", severity: "error" });
+        setMessage({ text: "Ошибка при получении данных получателя", severity: "error" });
         setOpenSnackbar(true);
-      });
+      }
+    };
+
+    fetchRecipientData();
   }, [recipientId]);
 
   const handleChange = (e) => {
@@ -43,21 +57,38 @@ const EditRecipientForm = () => {
     setRecipientData({ ...recipientData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios
-      .put(`${API_BASE_URL}/api/recipients/${recipientId}/`, recipientData)
-      .then(() => {
-        setMessage({ text: "Recipient updated successfully!", severity: "success" });
+
+    try {
+      const accessToken = localStorage.getItem("access_token");
+      if (!accessToken) {
+        setMessage({ text: "Токен доступа отсутствует. Пожалуйста, войдите в систему.", severity: "error" });
         setOpenSnackbar(true);
-        setTimeout(() => navigate("/dashboard/recipient-groups"), 1500);
-      })
-      .catch((error) => {
-        console.error("Error updating recipient:", error);
-        setMessage({ text: "Failed to update recipient", severity: "error" });
-        setOpenSnackbar(true);
-      });
+        return;
+      }
+
+      await axios.put(
+        `${API_BASE_URL}/api/recipients/${recipientId}/`,
+        recipientData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      setMessage({ text: "Получатель успешно обновлен!", severity: "success" });
+      setOpenSnackbar(true);
+      setTimeout(() => navigate("/dashboard/recipient-groups"), 1500);
+    } catch (error) {
+      console.error("Error updating recipient:", error);
+      setMessage({ text: "Не удалось обновить получателя", severity: "error" });
+      setOpenSnackbar(true);
+    }
   };
+
 
   return (
     <Container maxWidth="sm">

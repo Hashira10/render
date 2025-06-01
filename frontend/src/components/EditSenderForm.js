@@ -26,16 +26,30 @@ const EditSenderForm = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/api/senders/${senderId}/`)
-      .then((response) => {
+    const fetchSenderData = async () => {
+      try {
+        const accessToken = localStorage.getItem("access_token");
+        if (!accessToken) {
+          setMessage({ text: "Токен доступа отсутствует. Пожалуйста, войдите в систему.", severity: "error" });
+          setOpenSnackbar(true);
+          return;
+        }
+
+        const response = await axios.get(`${API_BASE_URL}/api/senders/${senderId}/`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
         setSenderData(response.data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching sender data:", error);
-        setMessage({ text: "Error fetching sender data", severity: "error" });
+        setMessage({ text: "Ошибка при получении данных отправителя", severity: "error" });
         setOpenSnackbar(true);
-      });
+      }
+    };
+
+    fetchSenderData();
   }, [senderId]);
 
   const handleChange = (e) => {
@@ -43,21 +57,38 @@ const EditSenderForm = () => {
     setSenderData({ ...senderData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios
-      .put(`${API_BASE_URL}/api/senders/${senderId}/`, senderData)
-      .then(() => {
-        setMessage({ text: "Sender updated successfully!", severity: "success" });
+
+    try {
+      const accessToken = localStorage.getItem("access_token");
+      if (!accessToken) {
+        setMessage({ text: "Токен доступа отсутствует. Пожалуйста, войдите в систему.", severity: "error" });
         setOpenSnackbar(true);
-        setTimeout(() => navigate("/dashboard/senders"), 1500);
-      })
-      .catch((error) => {
-        console.error("Error updating sender:", error);
-        setMessage({ text: "Failed to update sender", severity: "error" });
-        setOpenSnackbar(true);
-      });
+        return;
+      }
+
+      await axios.put(
+        `${API_BASE_URL}/api/senders/${senderId}/`,
+        senderData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      setMessage({ text: "Отправитель успешно обновлён!", severity: "success" });
+      setOpenSnackbar(true);
+      setTimeout(() => navigate("/dashboard/senders"), 1500);
+    } catch (error) {
+      console.error("Error updating sender:", error);
+      setMessage({ text: "Не удалось обновить отправителя", severity: "error" });
+      setOpenSnackbar(true);
+    }
   };
+
 
   return (
     <Container maxWidth="sm">
